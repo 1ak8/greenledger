@@ -133,10 +133,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       .then((data) => {
         if (!alive) return
         if (data.company) {
-          setCompany((prev) => (prev && prev._id !== DEMO_COMPANY._id ? prev : data.company))
+          setCompany((prev) =>
+            !prev || prev.name === 'Sharma Steel Pvt Ltd' || prev._id === DEMO_COMPANY._id
+              ? data.company
+              : prev,
+          )
         }
         if (data.baseline) {
-          setBaseline((prev) => (prev && prev._id !== DEMO_BASELINE._id ? prev : data.baseline))
+          setBaseline((prev) =>
+            !prev || prev._id === DEMO_BASELINE._id || prev.companyId === DEMO_COMPANY._id
+              ? data.baseline
+              : prev,
+          )
         }
         if (data.simulation?._id) {
           try {
