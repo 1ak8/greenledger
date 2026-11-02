@@ -1,0 +1,58 @@
+{
+  "steel": {
+    "median_intensity": 1.35,
+    "p25_intensity": 0.95,
+    "p75_intensity": 1.80,
+    "unit": "tCO2e/t_product",
+    "source": "BEE PAT Cycle VI, World Steel Association"
+  },
+  "cement": {
+    "median_intensity": 0.65,
+    "p25_intensity": 0.55,
+    "p75_intensity": 0.80,
+    "unit": "tCO2e/t_product",
+    "source": "BEE PAT Cycle VI, WBCSD CSI"
+  },
+  "textile": {
+    "median_intensity": 0.035,
+    "p25_intensity": 0.020,
+    "p75_intensity": 0.055,
+    "unit": "tCO2e/t_product",
+    "source": "UNFCCC sectoral benchmarks"
+  },
+  "chemical": {
+    "median_intensity": 0.90,
+    "p25_intensity": 0.60,
+    "p75_intensity": 1.30,
+    "unit": "tCO2e/t_product",
+    "source": "BEE PAT, IEA Chemical Roadmap"
+  },
+  "auto-component": {
+    "median_intensity": 0.45,
+    "p25_intensity": 0.30,
+    "p75_intensity": 0.65,
+    "unit": "tCO2e/t_product",
+    "source": "Industry estimates, BEE"
+  },
+  "foundry": {
+    "median_intensity": 1.10,
+    "p25_intensity": 0.80,
+    "p75_intensity": 1.50,
+    "unit": "tCO2e/t_product",
+    "source": "Institute of Indian Foundrymen"
+  },
+  "paper": {
+    "median_intensity": 0.75,
+    "p25_intensity": 0.55,
+    "p75_intensity": 1.00,
+    "unit": "tCO2e/t_product",
+    "source": "BEE PAT, IPMA"
+  },
+  "other": {
+    "median_intensity": 0.80,
+    "p25_intensity": 0.50,
+    "p75_intensity": 1.20,
+    "unit": "tCO2e/t_product",
+    "source": "Estimated average"
+  }
+}

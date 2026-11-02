@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: carbontwin-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: 22.11.0
+      - key: MONGODB_URI
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true

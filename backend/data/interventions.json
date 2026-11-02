@@ -1,0 +1,129 @@
+{
+  "steel": [
+    {
+      "id": "vfd_motors",
+      "name": "Motor VFD Retrofits",
+      "capex": 1200000,
+      "annualSavings": 900000,
+      "co2Abated": 85,
+      "payback": 1.3,
+      "category": "energy_efficiency",
+      "scaleFactor": "per_18000t",
+      "source": "BEE best practices, vendor quotes"
+    },
+    {
+      "id": "scrap_upgrade",
+      "name": "Scrap Sourcing Upgrade",
+      "capex": 4000000,
+      "annualSavings": 2200000,
+      "co2Abated": 210,
+      "payback": 1.8,
+      "category": "material",
+      "scaleFactor": "per_18000t",
+      "source": "World Steel scrap benchmarks"
+    },
+    {
+      "id": "furnace_upgrade",
+      "name": "Furnace Efficiency Upgrade",
+      "capex": 16000000,
+      "annualSavings": 6800000,
+      "co2Abated": 640,
+      "payback": 2.4,
+      "category": "energy_efficiency",
+      "scaleFactor": "per_18000t",
+      "source": "MNRE, vendor quotations"
+    },
+    {
+      "id": "solar_500kwp",
+      "name": "Solar 500 kWp",
+      "capex": 24000000,
+      "annualSavings": 5600000,
+      "co2Abated": 532,
+      "payback": 4.3,
+      "category": "renewable",
+      "scaleFactor": "per_18000t",
+      "source": "MNRE benchmark costs, Rs 48/Wp"
+    },
+    {
+      "id": "waste_heat_recovery",
+      "name": "Waste Heat Recovery",
+      "capex": 8000000,
+      "annualSavings": 3200000,
+      "co2Abated": 280,
+      "payback": 2.5,
+      "category": "energy_efficiency",
+      "scaleFactor": "per_18000t",
+      "source": "BEE PAT, vendor quotations"
+    }
+  ],
+  "cement": [
+    {
+      "id": "clinker_ratio",
+      "name": "Reduce Clinker Ratio (Blended Cement)",
+      "capex": 5000000,
+      "annualSavings": 3500000,
+      "co2Abated": 450,
+      "payback": 1.4,
+      "category": "material",
+      "scaleFactor": "per_50000t",
+      "source": "WBCSD CSI, Indian cement benchmarks"
+    },
+    {
+      "id": "waste_heat_cement",
+      "name": "Waste Heat Recovery System",
+      "capex": 25000000,
+      "annualSavings": 8000000,
+      "co2Abated": 800,
+      "payback": 3.1,
+      "category": "energy_efficiency",
+      "scaleFactor": "per_50000t",
+      "source": "MNRE, BEE PAT"
+    },
+    {
+      "id": "solar_cement",
+      "name": "Solar 1 MWp",
+      "capex": 45000000,
+      "annualSavings": 11000000,
+      "co2Abated": 1050,
+      "payback": 4.1,
+      "category": "renewable",
+      "scaleFactor": "per_50000t",
+      "source": "MNRE benchmark costs"
+    }
+  ],
+  "other": [
+    {
+      "id": "vfd_generic",
+      "name": "Motor VFD Retrofits",
+      "capex": 1000000,
+      "annualSavings": 700000,
+      "co2Abated": 60,
+      "payback": 1.4,
+      "category": "energy_efficiency",
+      "scaleFactor": "per_10000t",
+      "source": "BEE best practices"
+    },
+    {
+      "id": "solar_generic",
+      "name": "Solar 300 kWp",
+      "capex": 14400000,
+      "annualSavings": 3400000,
+      "co2Abated": 320,
+      "payback": 4.2,
+      "category": "renewable",
+      "scaleFactor": "per_10000t",
+      "source": "MNRE benchmark costs"
+    },
+    {
+      "id": "led_generic",
+      "name": "LED Lighting Retrofit",
+      "capex": 400000,
+      "annualSavings": 280000,
+      "co2Abated": 24,
+      "payback": 1.4,
+      "category": "energy_efficiency",
+      "scaleFactor": "per_10000t",
+      "source": "BEE DSM programme"
+    }
+  ]
+}

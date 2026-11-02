@@ -1,0 +1,455 @@
+================================================================================
+                                    I D E A
+================================================================================
+
+                        C A R B O N T W I N
+          Decision engine for industrial decarbonisation
+
+    "Twin" = a model of the plant, used to test decisions before
+                      capital is committed.
+
+
+================================================================================
+1. PROBLEM STATEMENT
+================================================================================
+
+Indian mid-size manufacturers face carbon pressure from two directions.
+
+Their EU buyers now require installation-level, product-wise embedded emissions
+data under CBAM. Where verified data is unavailable, EU importers must apply
+default values with a markup - raising landed cost and pushing buyers toward
+more transparent suppliers.
+
+Domestically, large listed customers are cascading supply-chain disclosure
+requirements downstream under BRSR.
+
+These manufacturers have no in-house sustainability function and no tooling.
+They cannot determine which green investment delivers a defensible return.
+The result: overpriced consultants, or no action at all.
+
+
+================================================================================
+2. SOLUTION
+================================================================================
+
+CarbonTwin converts operational data into two decisions:
+
+   1. WHAT IS OUR CARBON POSITION?
+      Product-level carbon intensity (kg CO2e per tonne of output),
+      not just aggregate emissions.
+
+   2. WHERE SHOULD THE NEXT RUPEE GO?
+      A ranked portfolio of interventions by Rupee saved per tonne of CO2
+      abated, constrained by budget.
+
+
+================================================================================
+3. HOW IT WORKS - ILLUSTRATIVE CASE
+================================================================================
+
+Sharma Steel, Raipur
+    400 employees
+    Rs 120 Cr revenue
+    18,000 t steel/yr
+    20% exported to Germany
+
+
+--------------------------------------------------------------------------------
+STEP 1 - DATA INGESTION
+--------------------------------------------------------------------------------
+
+Utility bills, fuel invoices, and production records uploaded as PDFs or
+images. Each figure is mapped to its source document.
+
+
+--------------------------------------------------------------------------------
+STEP 2 - CARBON BASELINE
+--------------------------------------------------------------------------------
+
+    Annual emissions        : 19,800 tCO2e
+    Carbon intensity        : 1.10 tCO2e per tonne of steel
+    Sector median           : 1.35 tCO2e/t - ahead of the median
+    Estimated CBAM exposure : Rs 2.7 Cr/yr at full phase-in (at EUR 70/tCO2)
+
+Output: product-level intensity plus a full evidence trail - every number
+traceable to a source document and a published emission factor.
+
+
+--------------------------------------------------------------------------------
+STEP 3 - INTERVENTION LIBRARY
+--------------------------------------------------------------------------------
+
+    INTERVENTION                CAPEX       ANNUAL SAVINGS   CO2 ABATED   PAYBACK
+    ------------------------------------------------------------------------------
+    Motor VFD retrofits         Rs 12 L     Rs 9 L           85 t         1.3 yrs
+    Scrap sourcing upgrade      Rs 40 L     Rs 22 L          210 t        1.8 yrs
+    Furnace efficiency upgrade  Rs 1.60 Cr  Rs 68 L          640 t        2.4 yrs
+    Solar 500 kWp               Rs 2.40 Cr  Rs 56 L          532 t        4.3 yrs
+
+
+--------------------------------------------------------------------------------
+STEP 4 - PORTFOLIO OPTIMISER
+--------------------------------------------------------------------------------
+
+    Budget entered: Rs 2.2 Cr
+
+    SELECTED  : VFD retrofits + Scrap upgrade + Furnace upgrade
+                Total CAPEX Rs 2.12 Cr
+    RESULT    : 935 tCO2e abated
+                Rs 99 L saved annually
+                2.1-year payback
+    EXCLUDED  : Solar - lowest return per rupee at current tariff
+
+The optimiser runs as a constrained knapsack problem: maximise abatement
+subject to budget and payback thresholds. Solar, the intuitive first choice,
+is correctly deprioritised.
+
+
+================================================================================
+4. STRATEGIC POSITIONING
+================================================================================
+
+TARGET CUSTOMER
+    Indian mid-size manufacturers (Rs 50-500 Cr revenue) with export exposure
+    or listed buyers. Regulatory pressure reaches them THROUGH THEIR CUSTOMERS,
+    not directly - their CFO has budget and urgency, but no sustainability team.
+
+MARKET ENTRY
+    Lead with a free product-level carbon report - the artefact their buyer is
+    asking for. Convert to a paid simulator, retain through annual tracking.
+
+    Funnel: Free report -> Simulator subscription -> Annual tracking
+
+CREDIBILITY BOUNDARY
+    CarbonTwin produces an EVIDENCE TRAIL, not a verification opinion.
+    Every figure links to its source document and emission factor.
+    Final verification remains with accredited third-party verifiers.
+
+
+================================================================================
+5. REVENUE MODEL
+================================================================================
+
+    PRODUCT       PRICE         OFFERING
+    ------------------------------------------------------------------------
+    Report        Rs 15-25k     One-time product-level carbon report
+    Starter       Rs 25k/yr      Self-serve simulator
+    Growth        Rs 75k/yr      Multi-facility + annual tracking
+    Enterprise    Rs 2-5L/yr     Audit trail + API access
+
+ADDITIONAL STREAMS
+
+    Green finance referral
+        Portfolio outputs matched to SIDBI / bank green-loan schemes;
+        referral commission per conversion.
+
+    B2B2B channel
+        Large listed buyers pay to onboard their supplier base onto a
+        common reporting standard.
+
+DISTRIBUTION
+    BEE-accredited energy auditors and CA firms, compensated on commission.
+
+
+================================================================================
+6. COMPETITIVE DIFFERENTIATION
+================================================================================
+
+    PLAYER                          FOCUS                   GAP
+    ------------------------------------------------------------------------
+    Watershed, Persefoni            Enterprise carbon       Global pricing, no
+                                    accounting              Indian emission
+                                                            factors, no invest-
+                                                            ment simulation
+
+    Indian carbon-accounting        Compliance reporting    Report-only; no
+    tools                                                   capex decision layer
+
+    Consultancies                   Advisory projects       Rs 15-20 L cost,
+                                                            3-month cycle,
+                                                            not repeatable
+
+DIFFERENTIATOR
+    Indian emission factors
+    + Mid-size price point
+    + Investment simulation
+    + CBAM-specific output
+
+
+================================================================================
+7. METHODOLOGY & DATA SOURCES
+================================================================================
+
+    INPUT                       SOURCE
+    ------------------------------------------------------------------------
+    Grid emission factors       CEA CO2 Baseline Database
+    Sector benchmarks           BEE PAT scheme data, published sector studies
+    Emission methodology        IPCC 2006 Guidelines, GHG Protocol
+    Intervention CAPEX          Vendor quotations, MNRE benchmark costs
+    EU carbon price             EU ETS market price (stated as an assumption
+                                at time of report)
+
+All assumptions are disclosed in the report. Nothing is a black box.
+
+
+================================================================================
+8. THE PITCH
+================================================================================
+
+    After CBAM, Indian manufacturers don't just need a carbon report -
+    they need to know which rupee of green investment buys the most
+    abatement. CarbonTwin tells them, before they spend it.
+
+
+================================================================================
+9. SIMPLE EXPLANATION - PLAIN LANGUAGE
+================================================================================
+
+
+--------------------------------------------------------------------------------
+A. THE PROBLEM - ONE FACTORY'S STORY
+--------------------------------------------------------------------------------
+
+Ramesh bhai runs a steel factory. Every day they make steel.
+
+Now the world is asking: "How much CO2 do you emit while making steel?"
+
+    - European buyers are asking  -> more CO2 = more tax
+    - Large customers are asking  -> report it, or lose the order
+
+Ramesh bhai has no answer. Because:
+
+    1. He does not know how much CO2 he emits
+    2. A consultant costs Rs 15-20 lakh
+    3. He does not know where to invest - solar? machine? scrap?
+    4. Invest in the wrong place = money wasted
+
+
+--------------------------------------------------------------------------------
+B. THE SOLUTION
+--------------------------------------------------------------------------------
+
+    One line: Software that calculates a factory's CO2 and tells them
+    where to invest.
+
+
+--------------------------------------------------------------------------------
+C. WORKFLOW - THE DOCTOR'S STEPS
+--------------------------------------------------------------------------------
+
+STEP 1 - TAKE THE TEST
+    Upload electricity bill + diesel bill + production register.
+    (Photos work too.)
+
+STEP 2 - REPORT CARD
+
+    "Annual emissions: 19,800 tonnes CO2.
+     Factories like yours average 24,000 tonnes.
+     You are already better."
+
+STEP 3 - THREE TREATMENTS
+
+    TREATMENT                   COST        ANNUAL SAVING   PAYBACK
+    ------------------------------------------------------------------
+    Replace old machine         Rs 1.6 Cr   Rs 68 L         2.4 yrs
+    Buy better scrap            Rs 40 L     Rs 22 L         1.8 yrs
+    Install solar               Rs 2.4 Cr   Rs 56 L         4.3 yrs
+
+STEP 4 - ENTER BUDGET
+    "I have Rs 2.2 Cr."
+
+STEP 5 - BEST PLAN
+
+    "Do these two: machine + scrap
+       Cost        : Rs 2 Cr
+       Saving      : Rs 90 lakh/year
+       CO2 cut     : 850 tonnes
+       Payback     : 2.2 years
+     Do not install solar yet - higher cost, lower return."
+
+STEP 6 - DOWNLOAD REPORT
+    PDF -> send to the customer. Done.
+
+
+--------------------------------------------------------------------------------
+D. LIVE SIMULATION
+--------------------------------------------------------------------------------
+
+STEP 7 - PLAY WITH IT
+
+    After the report, the owner can experiment - without spending a rupee.
+    Like a video game: change something, instantly see what happens.
+
+    SLIDERS:
+        Solar          - on/off, how many kW
+        Machine        - upgrade yes/no
+        Budget         - Rs 50 lakh to Rs 5 Cr
+        Production     - 18,000 to 36,000 tonnes
+        Power tariff   - Rs 7 to Rs 10 per unit
+
+    Move a slider -> new result instantly. No waiting.
+
+STEP 8 - FUTURE RESULTS
+
+    The software shows the next 5 years, not just today.
+    Example: "Best plan" selected (machine + scrap)
+
+    YEAR    CO2 EMITTED   YEARLY SAVING   CUMULATIVE SAVING
+    -------------------------------------------------------
+    2026    18,865 t      Rs 99 L         Rs 99 L
+    2027    18,850 t      Rs 1.04 Cr      Rs 2.03 Cr
+    2028    18,835 t      Rs 1.09 Cr      Rs 3.12 Cr
+    2029    18,820 t      Rs 1.15 Cr      Rs 4.27 Cr
+    2030    18,805 t      Rs 1.20 Cr      Rs 5.47 Cr
+
+    WHAT THIS MEANS
+        Invested        : Rs 2.12 Cr
+        Saved in 5 yrs  : Rs 5.47 Cr
+        CO2 kept falling every year
+        Net gain        : Rs 3.35 Cr
+
+    (Savings rise each year because power tariffs rise each year.)
+
+STEP 9 - PLAN A vs PLAN B
+
+    People say "install solar". The software says "wait, look first."
+
+    METRIC              PLAN A - SOLAR    PLAN B - MACHINE + SCRAP
+    ------------------------------------------------------------------
+    Cost                Rs 2.4 Cr         Rs 2 Cr
+    CO2 cut             532 t             850 t
+    Yearly saving       Rs 56 L           Rs 90 L
+    Payback             4.3 yrs           2.2 yrs
+    5-year saving       Rs 3.1 Cr         Rs 5.0 Cr
+
+    Plan B wins. The software worked this out - Ramesh bhai did not guess.
+
+STEP 10 - SOFTWARE TESTS ITSELF
+
+    4 options available. The software checks every combination:
+
+        16 combinations -> result for each -> pick the best
+
+    ANALOGY: Packing a bag. The bag is small, the items are many.
+             Put the most valuable item in first.
+
+    HUMAN                SOFTWARE
+    ------------------------------------
+    3 months of maths    2 seconds
+    Guesswork            Full optimisation
+
+
+--------------------------------------------------------------------------------
+E. WHAT JUDGES SEE IN THE DEMO
+--------------------------------------------------------------------------------
+
+    1. Upload a bill        -> data extracted
+    2. Report               -> "19,800 tonnes, better than average"
+    3. Move sliders         -> chart updates LIVE
+    4. Plan A vs Plan B     -> side by side
+    5. Best plan            -> PDF download
+
+
+--------------------------------------------------------------------------------
+F. WHY THIS MATTERS
+--------------------------------------------------------------------------------
+
+    Report      = free entry point   (gets the customer in)
+    Simulation  = the actual product (this is where revenue comes from)
+
+    The report brings them once.
+    The simulation brings them back every month.
+
+
+================================================================================
+10. PROJECT STRUCTURE (MERN: React + Vite, Node.js + Express, MongoDB)
+================================================================================
+
+    iit indore - mffs sustainablity/
+    |
+    |-- .env                          ONE root ENV (PORT, MONGODB_URI, GEMINI_API_KEY)
+    |-- .env.example                  Template with placeholders
+    |-- .gitignore
+    |-- README.md                     Run instructions, API table, verified numbers
+    |-- project_plan.txt              Locked concept & architecture
+    |
+    |-- frontend/                     React 19 + Vite + TypeScript -> Vercel
+    |   |
+    |   |-- src/
+    |   |   |-- App.tsx               Route tree with persistent AppShell layout
+    |   |   |-- main.tsx              Vite React DOM entry
+    |   |   |-- index.css             Theme design tokens (chalk/limestone/rust/patina)
+    |   |   |
+    |   |   |-- components/
+    |   |   |   |-- AppShell.tsx      Full-height sidebar, 56px topbar, mobile drawer
+    |   |   |   |-- ui.tsx            PageHeader, Panel, Stat, Bar, Badge, Empty
+    |   |   |   |-- MaccChart.tsx     SVG Marginal Abatement Cost Curve + tooltip
+    |   |   |   |-- FileDropzone.tsx  Drag-and-drop bill uploader
+    |   |   |
+    |   |   |-- pages/
+    |   |   |   |-- Dashboard.tsx     Overview: stats, MACC, benchmark, documents, plan
+    |   |   |   |-- Company.tsx       Company profile & factory identity
+    |   |   |   |-- Upload.tsx        Monthly bills upload & editable extracted items
+    |   |   |   |-- Baseline.tsx      Scope 1 & 2 breakdown, evidence trail, CBAM
+    |   |   |   |-- Simulate.tsx      Interactive capital slider, MACC, projection
+    |   |   |   |-- Library.tsx       Sector intervention catalogue & net ₹/t ranking
+    |   |   |   |-- Report.tsx        Executive report preview & PDF download
+    |   |   |
+    |   |   |-- lib/
+    |   |   |   |-- api.ts            Axios client & API endpoints
+    |   |   |   |-- format.ts         Indian numbering formatters (₹ Lakh/Crore, tonnes)
+    |   |   |   |-- session.tsx       React Context for workspace state
+    |   |   |   |-- types.ts          TypeScript domain models
+    |   |   |
+    |   |   |-- public/               mark.svg, favicon
+    |   |   |-- package.json
+    |   |   |-- vite.config.ts
+    |   |   |-- tsconfig.json
+    |
+    |-- backend/                      Node.js + Express + Mongoose -> Render
+    |   |
+    |   |-- server.js                 Server startup, MongoDB connect with file fallback
+    |   |-- render.yaml
+    |   |-- package.json
+    |   |
+    |   |-- config/
+    |   |   |-- db.js                 Mongoose connection manager
+    |   |
+    |   |-- models/                   Mongoose schemas
+    |   |   |-- Company.js
+    |   |   |-- Upload.js
+    |   |   |-- Baseline.js
+    |   |   |-- Simulation.js
+    |   |   |-- Report.js
+    |   |
+    |   |-- memory/
+    |   |   |-- store.js              Dual-mode file store (Mongoose-compatible API)
+    |   |
+    |   |-- routes/
+    |   |   |-- company.routes.js     POST/GET /api/company
+    |   |   |-- upload.routes.js      POST /api/upload, PUT /api/upload/:id
+    |   |   |-- emissions.routes.js   POST /api/emissions/:companyId, GET baseline
+    |   |   |-- simulate.routes.js    POST /api/simulate, GET interventions
+    |   |   |-- report.routes.js      POST /api/report/generate, GET download
+    |   |   |-- health.routes.js      GET /api/health
+    |   |
+    |   |-- services/
+    |   |   |-- extractor.service.js  Gemini 1.5 flash OCR with deterministic seed fallback
+    |   |   |-- emissions.service.js  CEA grid factor + fuel emission engine
+    |   |   |-- optimizer.service.js  Greedy knapsack portfolio + MACC + sensitivity
+    |   |   |-- pdf.service.js        HTML generator + Puppeteer PDF render
+    |   |
+    |   |-- data/
+    |   |   |-- emission_factors.json CEA v20 & IPCC emission factors
+    |   |   |-- interventions.json    Verified industrial decarbonisation measures
+    |   |   |-- benchmarks.json       Sector intensity medians
+    |   |
+    |   |-- uploads/                  Uploaded bill documents & rendered PDF cache
+    |
+    |-- docs/
+        |-- api.md                    Full API specification and contract documentation
+
+
+================================================================================
+                                   LOCKED
+================================================================================

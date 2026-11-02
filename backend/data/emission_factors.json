@@ -1,0 +1,42 @@
+{
+  "grid": {
+    "national_average": 0.716,
+    "states": {
+      "chhattisgarh": 0.88,
+      "jharkhand": 0.92,
+      "odisha": 0.87,
+      "maharashtra": 0.78,
+      "gujarat": 0.77,
+      "tamil_nadu": 0.65,
+      "karnataka": 0.60,
+      "andhra_pradesh": 0.72,
+      "telangana": 0.74,
+      "uttar_pradesh": 0.82,
+      "madhya_pradesh": 0.80,
+      "rajasthan": 0.83,
+      "west_bengal": 0.90,
+      "punjab": 0.75,
+      "haryana": 0.79,
+      "kerala": 0.50,
+      "goa": 0.70,
+      "delhi": 0.76,
+      "bihar": 0.85
+    },
+    "unit": "tCO2e/MWh",
+    "source": "CEA CO2 Baseline Database v19"
+  },
+  "fuels": {
+    "diesel": { "factor": 2.68, "unit": "kgCO2e/litre", "source": "IPCC 2006 Vol2 Ch1" },
+    "furnace_oil": { "factor": 3.11, "unit": "kgCO2e/litre", "source": "IPCC 2006 Vol2 Ch1" },
+    "natural_gas": { "factor": 2.04, "unit": "kgCO2e/m3", "source": "IPCC 2006 Vol2 Ch1" },
+    "coal": { "factor": 2.42, "unit": "kgCO2e/kg", "source": "IPCC 2006 Vol2 Ch1" },
+    "pet_coke": { "factor": 3.17, "unit": "kgCO2e/kg", "source": "IPCC 2006 Vol2 Ch1" },
+    "lpg": { "factor": 1.61, "unit": "kgCO2e/litre", "source": "IPCC 2006 Vol2 Ch1" },
+    "biomass_briquette": { "factor": 0.02, "unit": "kgCO2e/kg", "source": "IPCC 2006 biogenic-neutral" }
+  },
+  "process": {
+    "steel_eaf_scrap": { "factor": 0.15, "unit": "tCO2e/t_steel", "source": "World Steel Association" },
+    "steel_if_scrap": { "factor": 0.45, "unit": "tCO2e/t_steel", "source": "World Steel Association" },
+    "cement_clinker": { "factor": 0.52, "unit": "tCO2e/t_clinker", "source": "IPCC 2006 Vol3 Ch2" }
+  }
+}
