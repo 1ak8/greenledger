@@ -17,7 +17,14 @@ function buildApp() {
 
   const app = express();
 
-  app.use(cors({ origin: env.CORS_ORIGINS.split(","), credentials: true }));
+  app.use(
+    cors({
+      origin: true,
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+    })
+  );
   app.use(express.json({ limit: "50mb" }));
   app.use("/uploads", express.static(env.UPLOAD_DIR));
 
