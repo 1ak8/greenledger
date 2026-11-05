@@ -1,6 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, Check, FileText, SlidersHorizontal } from 'lucide-react'
+import {
+  Activity,
+  ArrowRight,
+  ArrowUpRight,
+  Building2,
+  Check,
+  Factory,
+  FileText,
+  Gauge,
+  Globe2,
+  Leaf,
+  MapPin,
+  SlidersHorizontal,
+} from 'lucide-react'
 import {
   PageHeader,
   Panel,
@@ -25,6 +38,17 @@ const DOC_LABEL: Record<string, string> = {
   electricity: 'Electricity',
   fuel: 'Fuel',
   production: 'Production',
+}
+
+const SECTOR_LABEL: Record<string, string> = {
+  steel: 'Steel',
+  cement: 'Cement',
+  textile: 'Textile',
+  chemical: 'Chemicals',
+  'auto-component': 'Auto components',
+  foundry: 'Foundry',
+  paper: 'Paper & pulp',
+  other: 'Manufacturing',
 }
 
 export function Dashboard() {
@@ -77,20 +101,23 @@ export function Dashboard() {
           description="Green Ledger turns utility bills into a product-level carbon baseline, then ranks green investment by rupees saved per tonne abated."
         />
         <div className="card overflow-hidden">
-          <div className="grid lg:grid-cols-[1.12fr_1fr]">
-            <div className="border-b border-line bg-elevated p-8 lg:border-b-0 lg:border-r">
-              <div className="mb-6 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-jade" />
-                <span className="text-[13px] font-medium uppercase tracking-[0.09em] text-fg-dim">
-                  No workspace loaded
-                </span>
-              </div>
-              <h2 className="max-w-[15ch] font-display text-[30px] font-semibold leading-[1.06] tracking-[-0.035em] text-fg">
+          <div className="grid lg:grid-cols-[1.08fr_0.92fr]">
+            <div className="relative overflow-hidden border-b border-line p-7 sm:p-9 lg:border-b-0 lg:border-r lg:p-10">
+              <div
+                className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.10),transparent_68%)]"
+                aria-hidden="true"
+              />
+              <span className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#52627a]">
+                <span className="h-1.5 w-1.5 rounded-full bg-jade pulse-dot" />
+                No workspace loaded
+              </span>
+              <h2 className="mt-5 max-w-[16ch] font-display text-[32px] font-bold leading-[1.03] tracking-[-0.04em] text-fg sm:text-[38px]">
                 Start with a factory, not a spreadsheet.
               </h2>
-              <p className="mt-4 max-w-[44ch] text-[13.5px] leading-relaxed text-fg-dim">
+              <p className="mt-4 max-w-[46ch] text-[14px] leading-relaxed text-fg-dim">
                 Four profile fields set the emission factors, sector benchmark
-                and export exposure. Green Ledger does the rest from your bills.
+                and export exposure. Green Ledger does the rest from your bills
+                — deterministically, with a traceable evidence trail.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <button onClick={() => loadDemo()} className="btn btn-primary">
@@ -104,16 +131,30 @@ export function Dashboard() {
                   Create profile
                 </button>
               </div>
-              <p className="mt-6 font-mono text-[13px] text-fg-faint">
-                DEMO · SHARMA STEEL · RAIPUR · 18,000 T/YR
+              <div className="mt-8 flex flex-wrap gap-1.5">
+                {[
+                  'CEA v19 grid factors',
+                  'IPCC 2006',
+                  'BEE PAT Cycle VI',
+                ].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-[5px] border border-line bg-white px-2 py-1 font-mono text-[10.5px] font-medium text-[#52627a]"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-[#5b6b82]">
+                Demo · Sharma Steel · Raipur · 18,000 t/yr
               </p>
             </div>
 
-            <ol className="divide-y divide-line">
+            <ol className="flex flex-col justify-center divide-y divide-line bg-[#fbfcfe]">
               {[
                 [
                   'Profile',
-                  'Sector, state, annual output and export share.',
+                  'Sector, state, annual output and export share set the engine.',
                 ],
                 [
                   'Bills',
@@ -124,15 +165,15 @@ export function Dashboard() {
                   'A ranked portfolio with capital, payback and tonnes abated.',
                 ],
               ].map(([title, body], i) => (
-                <li key={title} className="flex gap-4 px-7 py-5">
-                  <span className="num w-6 shrink-0 pt-0.5 text-[13px] text-forge-bright">
+                <li key={title} className="flex gap-4 px-6 py-6 sm:px-8">
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line bg-white font-mono text-[11.5px] font-bold text-[#52627a] shadow-[0_1px_2px_rgba(10,18,34,0.04)]">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div>
-                    <div className="text-[13.5px] font-medium text-fg">
+                    <div className="text-[13.5px] font-bold text-fg">
                       {title}
                     </div>
-                    <div className="mt-1 text-[13px] leading-relaxed text-fg-dim">
+                    <div className="mt-1 max-w-[38ch] text-[12.5px] leading-relaxed text-fg-dim">
                       {body}
                     </div>
                   </div>
@@ -171,13 +212,38 @@ export function Dashboard() {
       baseline.carbonIntensity
     : 0
 
+  const budgetUsed = latest
+    ? Math.min(100, Math.round((latest.totalCapex / latest.budget) * 100))
+    : 0
+
   return (
     <>
       <PageHeader
         title="Overview"
-        description={`${company.name} · ${company.state} · ${company.annualProduction.toLocaleString(
-          'en-IN',
-        )} ${company.productionUnit} a year`}
+        description="Your emissions baseline, benchmark position and latest investment plan — in one view."
+        meta={
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="pill">
+              <Building2 size={12} className="text-[#64748b]" />
+              {company.name}
+            </span>
+            <span className="pill">
+              <MapPin size={12} className="text-[#64748b]" />
+              {company.state}
+            </span>
+            <span className="pill">
+              <Factory size={12} className="text-[#64748b]" />
+              {company.annualProduction.toLocaleString('en-IN')}{' '}
+              {company.productionUnit}/yr
+            </span>
+            {company.exportShare > 0 && (
+              <span className="pill">
+                <Globe2 size={12} className="text-[#64748b]" />
+                {company.exportShare}% exported
+              </span>
+            )}
+          </div>
+        }
         action={
           <div className="flex items-center gap-2">
             <button
@@ -197,11 +263,37 @@ export function Dashboard() {
         }
       />
 
-      {!baseline && !loading && (
-        <div className="card mb-6 border-t-[3px] border-t-forge">
-          <div className="border-b border-line bg-elevated px-4 py-2.5">
-            <h2 className="panel-title">Three steps to your first report</h2>
+      {!baseline && loading && (
+        <div className="space-y-4" aria-busy="true" aria-label="Loading overview">
+          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="card h-[132px] p-5">
+                <div className="skeleton h-3 w-24 rounded" />
+                <div className="skeleton mt-5 h-7 w-32 rounded" />
+                <div className="skeleton mt-4 h-2.5 w-40 rounded" />
+              </div>
+            ))}
           </div>
+          <div className="grid gap-4 xl:grid-cols-[1.65fr_1fr]">
+            <div className="card h-[420px] p-5">
+              <div className="skeleton h-4 w-52 rounded" />
+              <div className="skeleton mt-10 h-[300px] w-full rounded" />
+            </div>
+            <div className="card h-[420px] p-5">
+              <div className="skeleton h-4 w-40 rounded" />
+              <div className="skeleton mt-10 h-[300px] w-full rounded" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!baseline && !loading && (
+        <Panel
+          title="Three steps to your first report"
+          meta="Profile is complete — add bills to continue"
+          accent
+          flush
+        >
           <ol className="divide-y divide-line">
             {[
               {
@@ -228,45 +320,47 @@ export function Dashboard() {
               {
                 done: false,
                 title: 'Baseline',
-                body: 'Percent of emissions by scope, intensity against the sector median, and CBAM exposure in rupees.',
+                body: 'Emissions by scope, intensity against the sector median, and CBAM exposure in rupees.',
                 to: '/upload',
                 cta: 'Calculate',
               },
             ].map((step, i) => (
               <li
                 key={step.title}
-                className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3.5"
+                className="flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4"
               >
                 <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[2px] border text-[13px] ${
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[12.5px] font-bold ${
                     step.done
-                      ? 'border-jade/25 bg-jade-light text-jade'
-                      : 'border-line-strong text-fg-faint'
+                      ? 'border-[#cfe8d9] bg-[#f1fbf4] text-jade'
+                      : 'border-line bg-white text-[#52627a]'
                   }`}
                 >
-                  {step.done ? <Check size={13} /> : i + 1}
+                  {step.done ? <Check size={14} /> : i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[13.5px] font-medium text-fg">
+                  <div className="text-[13.5px] font-semibold text-fg">
                     {step.title}
                   </div>
-                  <div className="text-[13px] text-fg-dim">{step.body}</div>
+                  <div className="mt-0.5 text-[12.5px] text-fg-dim">
+                    {step.body}
+                  </div>
                 </div>
                 <button
                   onClick={() => navigate(step.to)}
-                  className="btn btn-secondary h-8 px-3 text-[12.5px]"
+                  className="btn btn-secondary h-8 px-3 text-[12px]"
                 >
                   {step.cta}
                 </button>
               </li>
             ))}
           </ol>
-        </div>
+        </Panel>
       )}
 
       {baseline && (
         <>
-          <div className="mb-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
+          <div className="mb-5 grid grid-cols-1 gap-3.5 min-[440px]:grid-cols-2 xl:grid-cols-4">
             <Stat
               label="Annual emissions"
               value={tonnes(baseline.totalEmissions)}
@@ -275,6 +369,7 @@ export function Dashboard() {
               tone="accent"
               bar={scope1Pct}
               barTone="forge"
+              icon={<Activity size={14} />}
             />
             <Stat
               label="Carbon intensity"
@@ -286,6 +381,7 @@ export function Dashboard() {
               tone={aheadOfMedian ? 'positive' : 'alert'}
               bar={(baseline.carbonIntensity / maxBench) * 100}
               barTone={aheadOfMedian ? 'jade' : 'amber'}
+              icon={<Gauge size={14} />}
             />
             <Stat
               label="CBAM exposure"
@@ -293,6 +389,7 @@ export function Dashboard() {
               unit="/ yr"
               hint={`At €${baseline.euCarbonPrice}/tCO₂ · estimate, not a liability`}
               tone="alert"
+              icon={<Globe2 size={14} />}
             />
             <Stat
               label={latest ? 'Plan abatement' : 'Library potential'}
@@ -304,21 +401,23 @@ export function Dashboard() {
                   : 'If every option ran'
               }
               tone="muted"
+              icon={<Leaf size={14} />}
             />
           </div>
 
-          <div className="mb-6 grid items-start gap-6 xl:grid-cols-[1.65fr_1fr]">
-            <div className="min-w-0 space-y-6">
+          <div className="mb-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(330px,1fr)]">
+            <div className="min-w-0 space-y-5">
               <Panel
                 title="Abatement potential by measure"
-                meta={`${company.sector} catalogue · ranked by annual CO₂ reduction`}
+                meta={`${SECTOR_LABEL[company.sector] ?? company.sector} catalogue`}
                 accent
                 action={
                   <Link
                     to="/library"
-                    className="text-[12.5px] font-medium text-forge hover:underline"
+                    className="link inline-flex items-center gap-1"
                   >
                     Full catalogue
+                    <ArrowUpRight size={12} />
                   </Link>
                 }
               >
@@ -332,7 +431,42 @@ export function Dashboard() {
               <Panel
                 title="Portfolio breakdown"
                 meta={latest ? 'Selected by the optimiser' : 'No plan saved'}
+                action={
+                  latest ? (
+                    <Link to="/report" className="link">
+                      Open report
+                    </Link>
+                  ) : undefined
+                }
                 flush
+                footer={
+                  latest ? (
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <div className="min-w-[180px] flex-1">
+                        <div className="mb-1.5 flex items-baseline justify-between gap-3 text-[11.5px]">
+                          <span className="font-semibold text-fg-dim">
+                            Capital deployed
+                          </span>
+                          <span className="num font-semibold text-fg">
+                            {inr(latest.totalCapex)}{' '}
+                            <span className="text-[#5b6b82]">
+                              / {inr(latest.budget)}
+                            </span>
+                          </span>
+                        </div>
+                        <Bar
+                          value={budgetUsed}
+                          max={100}
+                          tone="forge"
+                          height={5}
+                        />
+                      </div>
+                      <span className="num rounded-[5px] border border-line bg-white px-2 py-1 text-[11px] font-bold text-[#52627a]">
+                        {budgetUsed}% utilised
+                      </span>
+                    </div>
+                  ) : undefined
+                }
               >
                 {latest && latest.selectedInterventions.length > 0 ? (
                   <div className="overflow-x-auto">
@@ -349,16 +483,19 @@ export function Dashboard() {
                       <tbody>
                         {latest.selectedInterventions.map((i) => (
                           <tr key={i.id}>
-                            <td className="whitespace-nowrap font-medium">
-                              {i.name}
+                            <td className="whitespace-nowrap font-semibold">
+                              <span className="flex items-center gap-2">
+                                <span className="h-1.5 w-1.5 rounded-full bg-jade" />
+                                {i.name}
+                              </span>
                             </td>
                             <td className="num whitespace-nowrap text-right text-fg-dim">
                               {inr(i.capex)}
                             </td>
-                            <td className="num whitespace-nowrap text-right">
+                            <td className="num whitespace-nowrap text-right font-semibold">
                               {tonnes(i.co2Abated)} t
                             </td>
-                            <td className="num whitespace-nowrap text-right text-jade">
+                            <td className="num whitespace-nowrap text-right font-semibold text-jade">
                               {inr(i.annualSavings)}
                             </td>
                             <td className="num whitespace-nowrap text-right text-fg-dim">
@@ -369,17 +506,17 @@ export function Dashboard() {
                       </tbody>
                       <tfoot>
                         <tr>
-                          <td className="font-medium">Portfolio total</td>
-                          <td className="num text-right text-fg">
+                          <td className="font-semibold">Portfolio total</td>
+                          <td className="num text-right font-semibold text-fg">
                             {inr(latest.totalCapex)}
                           </td>
-                          <td className="num text-right text-fg">
+                          <td className="num text-right font-semibold text-fg">
                             {tonnes(latest.totalAbatement)} t
                           </td>
-                          <td className="num text-right text-jade">
+                          <td className="num text-right font-semibold text-jade">
                             {inr(latest.totalSavings)}
                           </td>
-                          <td className="num text-right text-fg">
+                          <td className="num text-right font-semibold text-fg">
                             {latest.blendedPayback} yr
                           </td>
                         </tr>
@@ -390,6 +527,7 @@ export function Dashboard() {
                   <Empty
                     title="No portfolio yet"
                     body="Set a budget and the optimiser returns the set that abates the most within it."
+                    icon={<SlidersHorizontal size={19} strokeWidth={1.8} />}
                     action={
                       <button
                         onClick={() => navigate('/simulate')}
@@ -403,74 +541,97 @@ export function Dashboard() {
                 )}
               </Panel>
 
-              <Panel title="Emissions composition" meta="Scope 1 + 2" flush>
-                <div className="grid gap-px bg-line sm:grid-cols-2">
-                  <div className="bg-panel px-4 py-4">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="text-[12.5px] font-medium uppercase tracking-[0.07em] text-fg-faint">
+              <Panel
+                title="Emissions composition"
+                meta="Scope 1 + 2 · annual"
+                action={
+                  <Link to="/baseline" className="link">
+                    Open baseline
+                  </Link>
+                }
+              >
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <div className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#5b6b82]">
+                      Total footprint
+                    </div>
+                    <div className="mt-1 flex items-baseline gap-1.5">
+                      <span className="figure text-[28px] leading-none text-fg">
+                        {tonnes(baseline.totalEmissions)}
+                      </span>
+                      <span className="text-[13px] font-semibold text-fg-faint">
+                        tCO₂e / year
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-[11.5px] font-semibold text-fg-dim">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-forge" />
+                      Scope 1
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-jade" />
+                      Scope 2
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex h-3.5 overflow-hidden rounded-full bg-[#edf1f6]">
+                  <div
+                    className="h-full bg-forge"
+                    style={{
+                      width: `${scope1Pct}%`,
+                      transition: 'width 750ms cubic-bezier(0.16,1,0.3,1)',
+                    }}
+                  />
+                  <div
+                    className="h-full bg-jade"
+                    style={{
+                      width: `${scope2Pct}%`,
+                      transition: 'width 750ms cubic-bezier(0.16,1,0.3,1)',
+                    }}
+                  />
+                </div>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[9px] border border-line bg-[#fbfcfe] px-3.5 py-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#52627a]">
                         Scope 1 · direct
                       </span>
-                      <span className="num text-[12.5px] text-forge-bright">
+                      <span className="num text-[11.5px] font-semibold text-forge-bright">
                         {scope1Pct}%
                       </span>
                     </div>
-                    <div className="num mt-1.5 text-[21px] font-semibold leading-none text-fg">
+                    <div className="num mt-1.5 text-[18px] font-semibold leading-none text-fg">
                       {tonnes(baseline.scope1)}
-                      <span className="ml-1 font-sans text-[13px] font-normal text-iron">
+                      <span className="ml-1 font-sans text-[11.5px] font-medium text-[#5b6b82]">
                         tCO₂e
                       </span>
                     </div>
-                    <div className="mt-3">
-                      <Bar
-                        value={baseline.scope1}
-                        max={baseline.totalEmissions}
-                        tone="forge"
-                        height={6}
-                      />
-                    </div>
-                    <p className="mt-2 text-[13px] leading-relaxed text-fg-faint">
+                    <p className="mt-1.5 text-[11.5px] leading-relaxed text-[#64748b]">
                       Fuel burned on site, plus process emissions.
                     </p>
                   </div>
-                  <div className="bg-panel px-4 py-4">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="text-[12.5px] font-medium uppercase tracking-[0.07em] text-fg-faint">
+                  <div className="rounded-[9px] border border-line bg-[#fbfcfe] px-3.5 py-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#52627a]">
                         Scope 2 · grid
                       </span>
-                      <span className="num text-[12.5px] text-jade">
+                      <span className="num text-[11.5px] font-semibold text-jade">
                         {scope2Pct}%
                       </span>
                     </div>
-                    <div className="num mt-1.5 text-[21px] font-semibold leading-none text-fg">
+                    <div className="num mt-1.5 text-[18px] font-semibold leading-none text-fg">
                       {tonnes(baseline.scope2)}
-                      <span className="ml-1 font-sans text-[13px] font-normal text-iron">
+                      <span className="ml-1 font-sans text-[11.5px] font-medium text-[#5b6b82]">
                         tCO₂e
                       </span>
                     </div>
-                    <div className="mt-3">
-                      <Bar
-                        value={baseline.scope2}
-                        max={baseline.totalEmissions}
-                        tone="jade"
-                        height={6}
-                      />
-                    </div>
-                    <p className="mt-2 text-[13px] leading-relaxed text-fg-faint">
+                    <p className="mt-1.5 text-[11.5px] leading-relaxed text-[#64748b]">
                       Purchased electricity × state grid factor.
                     </p>
                   </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line bg-elevated px-4 py-2.5 text-[13px]">
-                  <span className="text-fg-faint">Total Scope 1 + 2</span>
-                  <span className="num ml-auto text-fg">
-                    {tonnes(baseline.totalEmissions)} tCO₂e
-                  </span>
-                  <Link
-                    to="/baseline"
-                    className="font-medium text-forge-bright hover:underline"
-                  >
-                    Open baseline
-                  </Link>
                 </div>
               </Panel>
             </div>
@@ -481,20 +642,20 @@ export function Dashboard() {
                   value={baseline.carbonIntensity}
                   median={baseline.sectorMedian}
                 />
-                <div className="mt-3 grid grid-cols-2 gap-px border border-line bg-line">
-                  <div className="bg-panel px-3 py-2.5">
-                    <div className="text-[13px] uppercase tracking-[0.06em] text-fg-faint">
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div className="rounded-[8px] border border-line bg-[#fbfcfe] px-3 py-2.5">
+                    <div className="text-[10.5px] font-bold uppercase tracking-[0.06em] text-[#5b6b82]">
                       Your position
                     </div>
-                    <div className="num mt-1 text-[15px] text-fg">
+                    <div className="num mt-1 text-[15px] font-semibold text-fg">
                       {baseline.carbonIntensity.toFixed(2)}
                     </div>
                   </div>
-                  <div className="bg-panel px-3 py-2.5">
-                    <div className="text-[13px] uppercase tracking-[0.06em] text-fg-faint">
+                  <div className="rounded-[8px] border border-line bg-[#fbfcfe] px-3 py-2.5">
+                    <div className="text-[10.5px] font-bold uppercase tracking-[0.06em] text-[#5b6b82]">
                       Sector median
                     </div>
-                    <div className="num mt-1 text-[15px] text-fg">
+                    <div className="num mt-1 text-[15px] font-semibold text-fg">
                       {baseline.sectorMedian.toFixed(2)}
                     </div>
                   </div>
@@ -506,32 +667,37 @@ export function Dashboard() {
                 </p>
                 <button
                   onClick={() => navigate('/baseline')}
-                  className="mt-3 flex w-full items-center justify-between border border-line px-3 py-2 text-[12.5px] text-fg transition-colors hover:border-line-strong hover:bg-elevated"
+                  className="mt-3 flex w-full items-center justify-between rounded-[7px] border border-line px-3 py-2 text-[12px] font-semibold text-fg transition-colors hover:border-line-strong hover:bg-elevated"
                 >
                   <span>Open full baseline</span>
-                  <ArrowRight size={13} className="text-fg-faint" />
+                  <ArrowRight size={13} className="text-[#5b6b82]" />
                 </button>
               </Panel>
 
-              <div className="rounded-[8px] border-2 border-[#FDE047] bg-[#FEFCE8] p-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-[12.5px] font-bold uppercase tracking-tight text-[#CA8A04]">
-                    CBAM Exposure
+              <div className="rounded-[12px] border border-[#f0e2b6] bg-[#fffbeb] p-5 shadow-[0_1px_2px_rgba(10,18,34,0.03)]">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.08em] text-[#92400e]">
+                    <Globe2 size={13} />
+                    CBAM exposure
                   </span>
-                  <span className="rounded-full border border-[#FDE047] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#CA8A04]">
-                    €{baseline.euCarbonPrice}/tCO₂
+                  <span className="rounded-full border border-[#eedda8] bg-white px-2 py-0.5 font-mono text-[10.5px] font-semibold text-[#92400e]">
+                    €{baseline.euCarbonPrice}/t
                   </span>
                 </div>
-                <div className="mt-2.5 flex flex-wrap items-baseline gap-2">
-                  <span className="num text-[34px] font-bold leading-none text-[#A16207]">
+                <div className="mt-3 flex flex-wrap items-baseline gap-2">
+                  <span className="figure text-[32px] leading-none text-[#78350f]">
                     {inr(baseline.cbamExposure)}
                   </span>
-                  <span className="text-[12.5px] font-medium text-[#CA8A04]">/ yr</span>
+                  <span className="text-[12px] font-semibold text-[#b45309]">
+                    / yr
+                  </span>
                 </div>
-                <div className="mt-3 divide-y divide-[#FEF08A] border-y border-[#FEF08A] text-[12.5px]">
+                <div className="mt-3.5 divide-y divide-[#f3e6bd] border-y border-[#f3e6bd] text-[12px]">
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-[#854D0E]">Exported tonnage</span>
-                    <span className="num font-semibold text-[#713F12]">
+                    <span className="font-medium text-[#7c5a23]">
+                      Exported tonnage
+                    </span>
+                    <span className="num font-semibold text-[#713f12]">
                       {tonnes(
                         company.annualProduction *
                           (company.exportShare / 100),
@@ -540,40 +706,50 @@ export function Dashboard() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-[#854D0E]">Embedded intensity</span>
-                    <span className="num font-semibold text-[#713F12]">
+                    <span className="font-medium text-[#7c5a23]">
+                      Embedded intensity
+                    </span>
+                    <span className="num font-semibold text-[#713f12]">
                       {baseline.carbonIntensity.toFixed(2)} t/t
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-[#854D0E]">Carbon price</span>
-                    <span className="num font-semibold text-[#713F12]">
+                    <span className="font-medium text-[#7c5a23]">
+                      Carbon price
+                    </span>
+                    <span className="num font-semibold text-[#713f12]">
                       €{baseline.euCarbonPrice}/t
                     </span>
                   </div>
                 </div>
-                <div className="mt-3">
-                  <span className="inline-flex items-center rounded-full border border-[#FDE047] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#CA8A04]">
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center rounded-full border border-[#eedda8] bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#92400e]">
                     Estimate, not a liability
                   </span>
+                  <button
+                    onClick={() => navigate('/baseline')}
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#92400e] hover:underline"
+                  >
+                    View calculation
+                    <ArrowUpRight size={11} />
+                  </button>
                 </div>
               </div>
 
-              <div className="rounded-[8px] border-2 border-[#93C5FD] bg-[#EFF6FF] p-4 shadow-sm">
-                <div className="flex items-center gap-1.5 text-[12.5px] font-semibold tracking-tight text-[#2563EB]">
-                  <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none">
-                    <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M8 4.5v4l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
+              <div className="rounded-[12px] border border-[#d9e5fe] bg-[#f4f8ff] p-5 shadow-[0_1px_2px_rgba(10,18,34,0.03)]">
+                <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.08em] text-[#1e40af]">
+                  <Globe2 size={13} />
                   Embedded in exports
                 </div>
                 <div className="mt-2.5 flex items-baseline gap-1.5">
-                  <span className="num text-[28px] font-bold leading-none text-[#1E3A8A]">
+                  <span className="figure text-[28px] leading-none text-[#1e3a8a]">
                     {tonnes(embedded)}
                   </span>
-                  <span className="text-[13px] font-semibold text-[#3B82F6]">tCO₂e</span>
+                  <span className="text-[12.5px] font-semibold text-[#1d4ed8]">
+                    tCO₂e
+                  </span>
                 </div>
-                <p className="mt-2 text-[12.5px] leading-relaxed text-[#1E40AF]">
+                <p className="mt-2 text-[12px] leading-relaxed text-[#3f5f9e]">
                   Reaches your EU importer as a cost. The obligation is theirs;
                   the data has to come from you.
                 </p>
@@ -581,15 +757,12 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="grid items-start gap-6 xl:grid-cols-2">
+          <div className="grid items-start gap-5 xl:grid-cols-2">
             <Panel
               title="Documents"
               meta={`${uploads.length} uploaded`}
               action={
-                <Link
-                  to="/upload"
-                  className="text-[12.5px] font-medium text-forge-bright hover:underline"
-                >
+                <Link to="/upload" className="link">
                   Manage
                 </Link>
               }
@@ -599,6 +772,7 @@ export function Dashboard() {
                 <Empty
                   title="No documents"
                   body="Upload an electricity bill and a fuel invoice to build Scope 1 and 2."
+                  icon={<FileText size={19} strokeWidth={1.8} />}
                   action={
                     <button
                       onClick={() => navigate('/upload')}
@@ -611,13 +785,18 @@ export function Dashboard() {
               ) : (
                 <ul className="divide-y divide-line">
                   {uploads.slice(0, 3).map((u) => (
-                    <li key={u._id} className="flex items-center gap-3 px-4 py-3">
-                      <FileText size={14} className="shrink-0 text-fg-faint" />
+                    <li
+                      key={u._id}
+                      className="flex items-center gap-3 px-5 py-3.5"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] border border-line bg-elevated text-[#64748b]">
+                        <FileText size={14} />
+                      </span>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-[13px] text-fg">
+                        <div className="truncate text-[12.5px] font-semibold text-fg">
                           {u.originalName || `${u.fileType} document`}
                         </div>
-                        <div className="mt-0.5 text-[12.5px] text-fg-faint">
+                        <div className="mt-0.5 text-[11.5px] font-medium text-[#5b6b82]">
                           {u.extractedData.length} line items ·{' '}
                           {new Date(u.createdAt).toLocaleDateString('en-IN', {
                             day: '2-digit',
@@ -637,10 +816,7 @@ export function Dashboard() {
               meta={latest ? `Budget ${inr(latest.budget)}` : undefined}
               action={
                 latest ? (
-                  <Link
-                    to="/report"
-                    className="text-[12.5px] font-medium text-forge-bright hover:underline"
-                  >
+                  <Link to="/report" className="link">
                     Open report
                   </Link>
                 ) : undefined
@@ -648,7 +824,7 @@ export function Dashboard() {
             >
               {latest ? (
                 <div>
-                  <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-4">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {[
                       { l: 'Capital', v: inr(latest.totalCapex) },
                       { l: 'Abated', v: `${tonnes(latest.totalAbatement)} t` },
@@ -663,29 +839,34 @@ export function Dashboard() {
                         tone: 'text-forge-bright',
                       },
                     ].map((s) => (
-                      <div key={s.l} className="bg-panel px-3 py-3">
-                        <div className="text-[12.5px] uppercase tracking-[0.06em] text-fg-faint">
+                      <div
+                        key={s.l}
+                        className="rounded-[8px] border border-line bg-[#fbfcfe] px-3 py-2.5"
+                      >
+                        <div className="text-[10px] font-bold uppercase tracking-[0.05em] text-[#5b6b82]">
                           {s.l}
                         </div>
                         <div
-                          className={`num mt-1 text-[16px] ${s.tone ?? 'text-fg'}`}
+                          className={`num mt-1 text-[14px] font-semibold ${
+                            s.tone ?? 'text-fg'
+                          }`}
                         >
                           {s.v}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 flex flex-wrap gap-1.5">
+                  <div className="mt-3.5 flex flex-wrap gap-1.5">
                     {latest.selectedInterventions.map((i) => (
                       <span
                         key={i.id}
-                        className="border border-line bg-elevated px-1.5 py-1 text-[13px] text-fg-dim"
+                        className="rounded-[5px] border border-line bg-elevated px-2 py-1 text-[11.5px] font-medium text-fg-dim"
                       >
                         {i.name}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-4 border-t border-line pt-3 text-[12.5px] leading-relaxed text-fg-faint">
+                  <p className="mt-3.5 border-t border-line pt-3 text-[12px] leading-relaxed text-[#64748b]">
                     Cuts {tonnes(latest.totalAbatement)} tCO₂e a year —{' '}
                     {(
                       (latest.totalAbatement / baseline.totalEmissions) *
@@ -695,11 +876,11 @@ export function Dashboard() {
                   </p>
                 </div>
               ) : (
-                <div className="py-3">
-                  <p className="text-[13.5px] text-fg">
+                <div className="py-2">
+                  <p className="text-[13.5px] font-semibold text-fg">
                     No investment plan yet.
                   </p>
-                  <p className="mt-1.5 max-w-[46ch] text-[13px] leading-relaxed text-fg-dim">
+                  <p className="mt-1.5 max-w-[46ch] text-[12.5px] leading-relaxed text-fg-dim">
                     Set a budget and the optimiser returns the portfolio that
                     abates the most within it.
                   </p>

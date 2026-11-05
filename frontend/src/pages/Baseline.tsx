@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
 import {
-  PageHeader,
-  Panel,
-  Stat,
-  Bar,
-  BenchmarkGauge,
-} from '../components/ui'
+  Activity,
+  ArrowRight,
+  ChevronDown,
+  Factory,
+  Gauge,
+  Globe2,
+} from 'lucide-react'
+import { PageHeader, Panel, Stat, Bar, BenchmarkGauge } from '../components/ui'
 import { getBaseline } from '../lib/api'
 import { inr, tonnes } from '../lib/format'
 import { DEMO_BASELINE, DEMO_COMPANY, useSession } from '../lib/session'
@@ -41,7 +42,6 @@ export function BaselinePage() {
           activeBaseline.sectorMedian) *
         100
       : 0
-  const maxScope = Math.max(activeBaseline.scope1, activeBaseline.scope2, 1)
   const scope1Pct = Math.round(
     (activeBaseline.scope1 / activeBaseline.totalEmissions) * 100,
   )
@@ -53,9 +53,20 @@ export function BaselinePage() {
     <>
       <PageHeader
         title="Carbon baseline"
-        description={`${activeCompany.name} · ${activeCompany.annualProduction.toLocaleString(
-          'en-IN',
-        )} ${activeCompany.productionUnit} a year · ${activeCompany.state}`}
+        description="A deterministic footprint built from bills, statutory emission factors and a full evidence trail behind every tonne."
+        meta={
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="pill">
+              <Factory size={12} className="text-[#64748b]" />
+              {activeCompany.name}
+            </span>
+            <span className="pill">
+              {activeCompany.annualProduction.toLocaleString('en-IN')}{' '}
+              {activeCompany.productionUnit}/yr
+            </span>
+            <span className="pill">{activeCompany.state}</span>
+          </div>
+        }
         action={
           <button
             onClick={() => navigate('/simulate')}
@@ -67,13 +78,14 @@ export function BaselinePage() {
         }
       />
 
-      <div className="mb-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-3.5 min-[440px]:grid-cols-2 xl:grid-cols-4">
         <Stat
           label="Annual emissions"
           value={tonnes(activeBaseline.totalEmissions)}
           unit="tCO₂e"
           hint={`${scope1Pct}% Scope 1 · ${scope2Pct}% Scope 2`}
           tone="accent"
+          icon={<Activity size={14} />}
           bar={scope1Pct}
           barTone="forge"
         />
@@ -85,6 +97,7 @@ export function BaselinePage() {
             gap <= 0 ? 'below' : 'above'
           } sector median`}
           tone={aheadOfMedian ? 'positive' : 'alert'}
+          icon={<Gauge size={14} />}
           bar={
             (activeBaseline.carbonIntensity /
               (activeBaseline.sectorMedian * 1.6)) *
@@ -98,6 +111,7 @@ export function BaselinePage() {
           unit="/ yr"
           hint={`At €${activeBaseline.euCarbonPrice}/tCO₂`}
           tone="alert"
+          icon={<Globe2 size={14} />}
         />
         <Stat
           label="Export share"
@@ -105,60 +119,118 @@ export function BaselinePage() {
           unit="of output"
           hint={activeCompany.exportDestination || 'Domestic only'}
           tone="muted"
+          icon={<Globe2 size={14} />}
         />
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[1.5fr_1fr]">
-        <div className="min-w-0 space-y-6">
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(340px,1fr)]">
+        <div className="min-w-0 space-y-5">
           <Panel
             title="Scope split"
             meta="tCO₂e per year"
             accent
+            action={
+              <span className="num text-[11.5px] font-semibold text-[#5b6b82]">
+                {tonnes(activeBaseline.scope1 + activeBaseline.scope2)} tCO₂e
+              </span>
+            }
           >
-            <div className="space-y-7">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <div className="text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#5b6b82]">
+                  Total Scope 1 + 2
+                </div>
+                <div className="mt-1.5 flex items-baseline gap-1.5">
+                  <span className="figure text-[32px] leading-none text-fg">
+                    {tonnes(activeBaseline.totalEmissions)}
+                  </span>
+                  <span className="text-[13px] font-semibold text-fg-faint">
+                    tCO₂e
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-[11px] font-semibold text-fg-dim">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-forge" />
+                  Scope 1 · {scope1Pct}%
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-jade" />
+                  Scope 2 · {scope2Pct}%
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 flex h-4 overflow-hidden rounded-full bg-[#edf1f6]">
+              <div
+                className="h-full bg-forge"
+                style={{
+                  width: `${scope1Pct}%`,
+                  transition: 'width 750ms cubic-bezier(0.16,1,0.3,1)',
+                }}
+              />
+              <div
+                className="h-full bg-jade"
+                style={{
+                  width: `${scope2Pct}%`,
+                  transition: 'width 750ms cubic-bezier(0.16,1,0.3,1)',
+                }}
+              />
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {[
                 {
-                  label: 'Scope 1 — Direct combustion',
+                  label: 'Scope 1 — direct combustion',
                   value: activeBaseline.scope1,
                   pct: scope1Pct,
                   tone: 'forge' as const,
                   note: 'Fuel burned on site, plus process emissions.',
                 },
                 {
-                  label: 'Scope 2 — Purchased electricity',
+                  label: 'Scope 2 — purchased electricity',
                   value: activeBaseline.scope2,
                   pct: scope2Pct,
                   tone: 'jade' as const,
                   note: 'Grid kWh × state emission factor.',
                 },
               ].map((s) => (
-                <div key={s.label}>
-                  <div className="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className="text-[13px] font-medium text-fg">
+                <div
+                  key={s.label}
+                  className="rounded-[9px] border border-line bg-[#fbfcfe] p-3.5"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.05em] text-[#52627a]">
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          s.tone === 'forge' ? 'bg-forge' : 'bg-jade'
+                        }`}
+                      />
                       {s.label}
                     </span>
-                    <span className="num ml-auto text-[15px] text-fg">
-                      {tonnes(s.value)}
-                    </span>
-                    <span className="num w-12 text-right text-[12.5px] text-fg-faint">
+                    <span className="num text-[11.5px] font-semibold text-[#5b6b82]">
                       {s.pct}%
                     </span>
                   </div>
-                  <Bar value={s.value} max={maxScope} tone={s.tone} height={8} />
-                  <p className="mt-2 text-[12.5px] text-fg-faint">{s.note}</p>
+                  <div className="num mt-2 text-[19px] font-semibold leading-none text-fg">
+                    {tonnes(s.value)}
+                    <span className="ml-1 font-sans text-[11.5px] font-medium text-[#5b6b82]">
+                      tCO₂e
+                    </span>
+                  </div>
+                  <div className="mt-2.5">
+                    <Bar
+                      value={s.value}
+                      max={activeBaseline.totalEmissions}
+                      tone={s.tone}
+                      height={5}
+                    />
+                  </div>
+                  <p className="mt-2 text-[11.5px] leading-relaxed text-[#64748b]">
+                    {s.note}
+                  </p>
                 </div>
               ))}
-            </div>
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
-              <span className="text-[13px] uppercase tracking-[0.06em] text-fg-faint">
-                Total Scope 1 + 2
-              </span>
-              <span className="num text-[13px] text-fg">
-                {tonnes(
-                  activeBaseline.scope1 + activeBaseline.scope2,
-                )}{' '}
-                tCO₂e
-              </span>
             </div>
           </Panel>
 
@@ -167,74 +239,70 @@ export function BaselinePage() {
             meta={`${activeBaseline.evidenceTrail.length} entries · click to inspect`}
             flush
           >
-            <div className="grid grid-cols-[32px_1fr_126px_14px] gap-3 border-b border-line bg-elevated px-4 py-2 text-[12.5px] font-medium uppercase tracking-[0.07em] text-fg-faint">
-              <span className="text-right">#</span>
-              <span>Figure</span>
-              <span className="text-right">Value</span>
+            <div className="grid grid-cols-[34px_1fr_132px_18px] gap-3 border-b border-line bg-[#fbfcfe] px-5 py-2.5">
+              <span className="text-right text-[10px] font-bold uppercase tracking-[0.09em] text-[#5b6b82]">
+                #
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.09em] text-[#5b6b82]">
+                Figure
+              </span>
+              <span className="text-right text-[10px] font-bold uppercase tracking-[0.09em] text-[#5b6b82]">
+                Value
+              </span>
               <span />
             </div>
             <ul>
               {activeBaseline.evidenceTrail.map(
                 (e: EvidenceEntry, i: number) => (
-                  <li
-                    key={i}
-                    className={i % 2 === 0 ? 'bg-panel' : 'bg-[#FDFBF6]'}
-                  >
+                  <li key={i} className="border-b border-[#eff2f7] last:border-b-0">
                     <button
                       onClick={() => setOpen(open === i ? null : i)}
                       aria-expanded={open === i}
-                      className="w-full px-4 py-3 text-left transition-colors hover:bg-elevated"
+                      className="w-full px-5 py-3 text-left transition-colors hover:bg-[#fbfcfe]"
                     >
-                      <div className="grid grid-cols-[32px_1fr_126px_14px] items-center gap-3">
-                        <span className="num text-right text-[13px] text-iron">
+                      <div className="grid grid-cols-[34px_1fr_132px_18px] items-center gap-3">
+                        <span className="num text-right text-[11.5px] font-medium text-[#64748b]">
                           {String(i + 1).padStart(2, '0')}
                         </span>
-                        <span className="min-w-0 truncate text-[13px] text-fg">
+                        <span className="min-w-0 truncate text-[12.5px] font-medium text-fg">
                           {e.figure}
                         </span>
-                        <span className="num text-right text-[13px] text-forge-bright">
+                        <span className="num text-right text-[12px] font-semibold text-forge-bright">
                           {e.value.toLocaleString('en-IN', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}{' '}
-                          <span className="text-[12.5px] text-fg-faint">
+                          <span className="text-[10.5px] font-medium text-[#5b6b82]">
                             {e.unit}
                           </span>
                         </span>
-                        <svg
-                          viewBox="0 0 12 12"
-                          className={`h-3 w-3 text-fg-faint transition-transform ${
-                            open === i ? 'rotate-180' : ''
-                          }`}
-                          fill="none"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M2.5 4.5 6 8l3.5-3.5"
-                            stroke="currentColor"
-                            strokeWidth="1.4"
-                            strokeLinecap="round"
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full border border-line text-[#5b6b82]">
+                          <ChevronDown
+                            size={11}
+                            className={`transition-transform duration-200 ${
+                              open === i ? 'rotate-180' : ''
+                            }`}
                           />
-                        </svg>
+                        </span>
                       </div>
                     </button>
                     {open === i && (
-                      <div className="grid gap-4 border-l-[3px] border-forge bg-elevated px-4 py-4 pl-[3.25rem] sm:grid-cols-2">
+                      <div className="grid gap-4 border-t border-line bg-[#fbfcfe] px-5 py-4 pl-[4.6rem] sm:grid-cols-2">
                         <div>
-                          <div className="text-[12.5px] font-medium uppercase tracking-[0.07em] text-fg-faint">
+                          <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#5b6b82]">
                             Calculation
                           </div>
-                          <div className="num mt-1.5 text-[12.5px] leading-relaxed text-fg-dim">
+                          <div className="num mt-1.5 rounded-[6px] border border-line bg-white px-2.5 py-2 text-[11.5px] leading-relaxed text-fg-dim">
                             {e.calculation}
                           </div>
                         </div>
                         <div>
-                          <div className="text-[12.5px] font-medium uppercase tracking-[0.07em] text-fg-faint">
+                          <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#5b6b82]">
                             Emission factor
                           </div>
-                          <div className="num mt-1.5 text-[12.5px] text-fg-dim">
+                          <span className="num mt-1.5 inline-flex rounded-[5px] border border-line bg-white px-2 py-1 text-[11px] font-medium text-fg-dim">
                             {e.emissionFactorId}
-                          </div>
+                          </span>
                         </div>
                       </div>
                     )}
@@ -242,56 +310,65 @@ export function BaselinePage() {
                 ),
               )}
             </ul>
+            <div className="flex items-center gap-2 border-t border-line bg-[#fbfcfe] px-5 py-2.5 text-[11px] text-[#5b6b82]">
+              <span className="h-1 w-1 rounded-full bg-forge" />
+              Every figure links back to its source document and factor ID.
+            </div>
           </Panel>
         </div>
 
-        <div className="min-w-0 space-y-4 xl:sticky xl:top-2">
-          <Panel title="Benchmark position" meta="10-yr sector view">
+        <div className="min-w-0 space-y-4 xl:sticky xl:top-[76px]">
+          <Panel title="Benchmark position" meta="tCO₂e per tonne">
             <BenchmarkGauge
               value={activeBaseline.carbonIntensity}
               median={activeBaseline.sectorMedian}
             />
-            <div className="mt-4 border-t border-line pt-3">
-              <div className="flex items-baseline justify-between">
-                <span className="text-[12.5px] text-fg-dim">
-                  Gap to median
-                </span>
-                <span
-                  className={`num text-[13px] ${
-                    aheadOfMedian ? 'text-jade' : 'text-amber'
-                  }`}
-                >
-                  {gap > 0 ? '+' : ''}
-                  {gap.toFixed(0)}%
-                </span>
-              </div>
-              <p className="mt-2 text-[12.5px] leading-relaxed text-fg-dim">
-                {aheadOfMedian
-                  ? 'Below the sector median. That is a selling point with buyers — and it still leaves abatement on the table.'
-                  : 'Above the sector median. Buyers comparing suppliers will notice, and CBAM exposure scales with this number.'}
-              </p>
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3">
+              <span className="text-[12px] font-medium text-fg-dim">
+                Gap to median
+              </span>
+              <span
+                className={`num rounded-[5px] border px-2 py-0.5 text-[11.5px] font-bold ${
+                  aheadOfMedian
+                    ? 'border-[#cbe6d5] bg-[#f2fbf5] text-jade'
+                    : 'border-[#efdfae] bg-[#fffbeb] text-amber'
+                }`}
+              >
+                {gap > 0 ? '+' : ''}
+                {gap.toFixed(0)}%
+              </span>
             </div>
+            <p className="mt-2 text-[12px] leading-relaxed text-fg-dim">
+              {aheadOfMedian
+                ? 'Below the sector median. That is a selling point with buyers — and it still leaves abatement on the table.'
+                : 'Above the sector median. Buyers comparing suppliers will notice, and CBAM exposure scales with this number.'}
+            </p>
           </Panel>
 
-          <div className="rounded-[8px] border-2 border-[#FDE047] bg-[#FEFCE8] p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-[12.5px] font-bold uppercase tracking-tight text-[#CA8A04]">
-                CBAM Exposure
+          <div className="rounded-[12px] border border-[#f0e2b6] bg-[#fffbeb] p-5 shadow-[0_1px_2px_rgba(10,18,34,0.03)]">
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.08em] text-[#92400e]">
+                <Globe2 size={13} />
+                CBAM exposure
               </span>
-              <span className="rounded-full border border-[#FDE047] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#CA8A04]">
-                EU Importer Cost
+              <span className="rounded-full border border-[#eedda8] bg-white px-2 py-0.5 font-mono text-[10.5px] font-semibold text-[#92400e]">
+                EU importer cost
               </span>
             </div>
             <div className="mt-3 flex flex-wrap items-baseline gap-2">
-              <span className="num text-[36px] font-bold leading-none text-[#A16207]">
+              <span className="figure text-[34px] leading-none text-[#78350f]">
                 {inr(activeBaseline.cbamExposure)}
               </span>
-              <span className="text-[12.5px] font-medium text-[#CA8A04]">/ yr</span>
+              <span className="text-[12px] font-semibold text-[#b45309]">
+                / yr
+              </span>
             </div>
-            <div className="mt-4 divide-y divide-[#FEF08A] border-y border-[#FEF08A] text-[12.5px]">
+            <div className="mt-4 divide-y divide-[#f3e6bd] border-y border-[#f3e6bd] text-[12px]">
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#854D0E]">Exported tonnage</span>
-                <span className="num font-semibold text-[#713F12]">
+                <span className="font-medium text-[#7c5a23]">
+                  Exported tonnage
+                </span>
+                <span className="num font-semibold text-[#713f12]">
                   {tonnes(
                     activeCompany.annualProduction *
                       (activeCompany.exportShare / 100),
@@ -300,28 +377,31 @@ export function BaselinePage() {
                 </span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#854D0E]">Embedded intensity</span>
-                <span className="num font-semibold text-[#713F12]">
+                <span className="font-medium text-[#7c5a23]">
+                  Embedded intensity
+                </span>
+                <span className="num font-semibold text-[#713f12]">
                   {activeBaseline.carbonIntensity.toFixed(2)} t/t
                 </span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#854D0E]">Carbon price</span>
-                <span className="num font-semibold text-[#713F12]">
+                <span className="font-medium text-[#7c5a23]">Carbon price</span>
+                <span className="num font-semibold text-[#713f12]">
                   €{activeBaseline.euCarbonPrice}/t
                 </span>
               </div>
             </div>
-            <div className="mt-3.5">
-              <span className="inline-flex items-center rounded-full border border-[#FDE047] bg-white px-2.5 py-0.5 text-[11.5px] font-semibold text-[#CA8A04]">
+            <p className="mt-3 text-[11.5px] leading-relaxed text-[#7c5a23]">
+              Exported tonnage × carbon intensity × €
+              {activeBaseline.euCarbonPrice}/tCO₂, converted at ₹97/€. The
+              obligation sits with your EU importer; this sizes the cost they
+              pass back through price.
+            </p>
+            <div className="mt-3">
+              <span className="inline-flex items-center rounded-full border border-[#eedda8] bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#92400e]">
                 Estimate, not a liability
               </span>
             </div>
-            <p className="mt-2.5 text-[12px] leading-relaxed text-[#854D0E]">
-              Exported tonnage × carbon intensity × €{activeBaseline.euCarbonPrice}
-              /tCO₂, converted at ₹97/€. The obligation sits with your EU
-              importer; this sizes the cost they pass back through price.
-            </p>
           </div>
 
           <button

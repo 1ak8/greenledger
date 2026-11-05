@@ -1,4 +1,15 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { Inbox } from 'lucide-react'
+
+export function LedgerRule({ className = '' }: { className?: string }) {
+  return (
+    <div className={`flex items-center gap-3 ${className}`} aria-hidden="true">
+      <span className="h-[2px] w-12 shrink-0 bg-fg" />
+      <span className="h-px flex-1 bg-line" />
+      <span className="h-1.5 w-1.5 shrink-0 rounded-[1px] bg-jade" />
+    </div>
+  )
+}
 
 export function PageHeader({
   title,
@@ -12,19 +23,25 @@ export function PageHeader({
   meta?: ReactNode
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end gap-x-8 gap-y-5">
-      <div className="max-w-[70ch]">
-        <h1 className="text-[36px] text-fg sm:text-[42px]">{title}</h1>
-        <span className="mt-3 block h-[2px] w-[60px] bg-forge" aria-hidden="true" />
-        {description && (
-          <p className="mt-3 text-[14.5px] font-medium leading-relaxed text-[#334155]">
-            {description}
-          </p>
+    <header className="mb-7">
+      <div className="grid items-start gap-x-8 gap-y-5 lg:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="min-w-0 max-w-[68ch]">
+          <h1 className="text-[30px] leading-[1.03] sm:text-[36px] lg:text-[38px]">
+            {title}
+          </h1>
+          {description && (
+            <p className="mt-3 max-w-[68ch] text-[14.5px] font-medium leading-relaxed text-fg-dim">
+              {description}
+            </p>
+          )}
+          {meta && <div className="mt-4">{meta}</div>}
+        </div>
+        {action && (
+          <div className="shrink-0 lg:pt-1.5">{action}</div>
         )}
-        {meta && <div className="mt-3">{meta}</div>}
       </div>
-      {action && <div className="ml-auto shrink-0">{action}</div>}
-    </div>
+      <LedgerRule className="mt-6" />
+    </header>
   )
 }
 
@@ -36,6 +53,7 @@ export function Panel({
   className = '',
   flush = false,
   accent = false,
+  footer,
 }: {
   title?: string
   meta?: ReactNode
@@ -44,25 +62,108 @@ export function Panel({
   className?: string
   flush?: boolean
   accent?: boolean
+  footer?: ReactNode
 }) {
   return (
-    <section
-      className={`card ${accent ? 'border-t-[3px] border-t-forge' : ''} ${className}`}
-    >
+    <section className={`card overflow-hidden ${className}`}>
       {(title || action) && (
-        <header className="flex min-h-10 items-center gap-3 border-b border-line bg-elevated px-4 py-2">
-          {title && <h2 className="panel-title">{title}</h2>}
+        <header className="flex min-h-[52px] items-center gap-3 border-b border-line px-5 py-2.5">
+          {accent && (
+            <span
+              className="h-4 w-[3px] shrink-0 rounded-full bg-forge"
+              aria-hidden="true"
+            />
+          )}
+          {title && <h2 className="panel-title shrink-0">{title}</h2>}
           {meta && (
-            <div className="hidden text-[13px] text-fg-faint sm:block">
+            <div className="hidden min-w-0 flex-1 truncate text-[12.5px] font-medium text-fg-faint sm:block">
               {meta}
             </div>
           )}
-          {action && <div className="ml-auto">{action}</div>}
+          {action && <div className="ml-auto shrink-0">{action}</div>}
         </header>
       )}
-      <div className={flush ? '' : 'p-4'}>{children}</div>
+      <div className={flush ? '' : 'p-5'}>{children}</div>
+      {footer && (
+        <div className="border-t border-line bg-elevated px-5 py-3">
+          {footer}
+        </div>
+      )}
     </section>
   )
+}
+
+type Tone = 'default' | 'positive' | 'accent' | 'muted' | 'alert'
+
+const STAT_TONES: Record<
+  Tone,
+  {
+    wrap: string
+    icon: string
+    label: string
+    value: string
+    unit: string
+    hint: string
+    badge: string | null
+    badgeClass: string
+    bar: string
+  }
+> = {
+  default: {
+    wrap: 'border-line bg-panel',
+    icon: 'border-line bg-elevated text-fg-dim',
+    label: 'text-fg-dim',
+    value: 'text-fg',
+    unit: 'text-fg-faint',
+    hint: 'text-fg-faint',
+    badge: null,
+    badgeClass: '',
+    bar: 'bg-iron',
+  },
+  positive: {
+    wrap: 'border-[#d4ebdc] bg-[#f4fbf6]',
+    icon: 'border-[#cbe6d5] bg-white text-jade',
+    label: 'text-[#166534]',
+    value: 'text-[#14532d]',
+    unit: 'text-[#15803d]',
+    hint: 'text-[#3f6b4f]',
+    badge: 'Optimal',
+    badgeClass: 'border-[#c6e6d2] bg-white text-[#15803d]',
+    bar: 'bg-jade',
+  },
+  accent: {
+    wrap: 'border-[#d9e5fe] bg-[#f4f8ff]',
+    icon: 'border-[#d2e1fd] bg-white text-forge',
+    label: 'text-[#1e40af]',
+    value: 'text-[#1e3a8a]',
+    unit: 'text-[#1d4ed8]',
+    hint: 'text-[#3f5f9e]',
+    badge: 'Primary',
+    badgeClass: 'border-[#cfe0fd] bg-white text-[#1d4ed8]',
+    bar: 'bg-forge',
+  },
+  alert: {
+    wrap: 'border-[#f0e2b6] bg-[#fffbeb]',
+    icon: 'border-[#efdfae] bg-white text-amber',
+    label: 'text-[#92400e]',
+    value: 'text-[#78350f]',
+    unit: 'text-[#b45309]',
+    hint: 'text-[#7c5a23]',
+    badge: 'Exposure',
+    badgeClass: 'border-[#eedda8] bg-white text-[#92400e]',
+    bar: 'bg-amber',
+  },
+  muted: {
+    wrap: 'border-line bg-panel',
+    icon: 'border-line bg-elevated text-iron',
+    label: 'text-fg-dim',
+    value: 'text-fg',
+    unit: 'text-fg-faint',
+    hint: 'text-fg-faint',
+    badge: null,
+    badgeClass: '',
+    bar: 'bg-iron',
+  },
 }
 
 export function Stat({
@@ -75,78 +176,72 @@ export function Stat({
   barTone,
   className = '',
   valueClassName = '',
+  icon,
 }: {
   label: string
   value: string
   unit?: string
   hint?: string
-  tone?: 'default' | 'positive' | 'accent' | 'muted' | 'alert'
+  tone?: Tone
   bar?: number
   barTone?: 'steel' | 'forge' | 'jade' | 'amber'
   className?: string
   valueClassName?: string
+  icon?: ReactNode
 }) {
-  const cardBorder =
-    tone === 'positive'
-      ? 'border-[#86EFAC] bg-[#F0FDF4]'
-      : tone === 'accent'
-        ? 'border-[#93C5FD] bg-[#EFF6FF]'
-        : tone === 'alert'
-          ? 'border-[#FDE047] bg-[#FEFCE8]'
-          : 'border-[#E2E8F0] bg-white'
-
-  const valueTone =
-    tone === 'positive'
-      ? 'text-[#16A34A]'
-      : tone === 'accent'
-        ? 'text-[#2563EB]'
-        : tone === 'alert'
-          ? 'text-[#CA8A04]'
-          : 'text-[#0F172A]'
-
+  const t = STAT_TONES[tone]
   return (
-    <div className={`rounded-[8px] border-2 p-4 shadow-sm transition-all ${cardBorder} ${className}`}>
-      <div className="flex items-center justify-between">
-        <div className="text-[12.5px] font-semibold tracking-tight text-[#475569]">
+    <div
+      className={`relative overflow-hidden rounded-[12px] border p-4 shadow-[0_1px_2px_rgba(10,18,34,0.03)] sm:p-5 ${t.wrap} ${className}`}
+    >
+      <div className="flex items-center gap-2.5">
+        {icon && (
+          <span
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] border ${t.icon}`}
+            aria-hidden="true"
+          >
+            {icon}
+          </span>
+        )}
+        <span className={`text-[12.5px] font-semibold tracking-tight ${t.label}`}>
           {label}
-        </div>
-        {tone === 'positive' && (
-          <span className="flex items-center gap-1 rounded-full border border-[#86EFAC] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#16A34A]">
-            <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none">
-              <path d="M3 8.5 6 11.5 13 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Optimal
-          </span>
-        )}
-        {tone === 'accent' && (
-          <span className="flex items-center gap-1 rounded-full border border-[#93C5FD] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#2563EB]">
-            Primary
-          </span>
-        )}
-        {tone === 'alert' && (
-          <span className="flex items-center gap-1 rounded-full border border-[#FDE047] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#CA8A04]">
-            Exposure
+        </span>
+        {t.badge && (
+          <span
+            className={`ml-auto hidden rounded-full border px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.04em] 2xl:inline-flex ${t.badgeClass}`}
+          >
+            {t.badge}
           </span>
         )}
       </div>
-      <div className="mt-2.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+      <div className="mt-3 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
         <span
-          className={`num whitespace-nowrap text-[28px] font-bold leading-none sm:text-[32px] ${valueTone} ${valueClassName}`}
+          className={`figure whitespace-nowrap text-[30px] leading-none sm:text-[34px] ${t.value} ${valueClassName}`}
         >
           {value}
         </span>
         {unit && (
-          <span className="font-sans text-[13px] font-semibold text-[#475569]">
+          <span className={`font-sans text-[13px] font-semibold ${t.unit}`}>
             {unit}
           </span>
         )}
       </div>
       {bar !== undefined && (
         <div className="mt-3.5">
-          <Bar value={bar} max={100} tone={barTone ?? 'forge'} height={4} />
+          <Bar
+            value={bar}
+            max={100}
+            tone={barTone ?? 'steel'}
+            height={4}
+            track={tone === 'default' || tone === 'muted' ? 'light' : 'tint'}
+          />
         </div>
       )}
-      {hint && <div className="mt-2.5 text-[12.5px] font-semibold text-[#475569]">{hint}</div>}
+      {hint && (
+        <div className={`mt-2.5 text-[12.5px] font-medium leading-snug ${t.hint}`}>
+          {hint}
+        </div>
+      )}
     </div>
   )
 }
@@ -156,11 +251,13 @@ export function Bar({
   max,
   tone = 'steel',
   height = 3,
+  track = 'light',
 }: {
   value: number
   max: number
   tone?: 'steel' | 'forge' | 'jade' | 'amber'
   height?: number
+  track?: 'light' | 'tint'
 }) {
   const width = max > 0 ? Math.min(100, (value / max) * 100) : 0
   const color =
@@ -173,12 +270,18 @@ export function Bar({
           : 'bg-iron'
   return (
     <div
-      className="overflow-hidden bg-elevated"
-      style={{ height, borderRadius: 1 }}
+      className={`overflow-hidden rounded-full ${
+        track === 'tint' ? 'bg-white/70' : 'bg-[#edf1f6]'
+      }`}
+      style={{ height }}
+      aria-hidden="true"
     >
       <div
-        className={`h-full ${color}`}
-        style={{ width: `${width}%`, borderRadius: 1 }}
+        className={`h-full rounded-full ${color}`}
+        style={{
+          width: `${width}%`,
+          transition: 'width 700ms cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
       />
     </div>
   )
@@ -200,21 +303,21 @@ export function Badge({
 }) {
   const cls =
     tone === 'forge'
-      ? 'border-[#93C5FD] bg-[#EFF6FF] text-[#2563EB]'
+      ? 'border-[#d2e1fd] bg-[#f4f8ff] text-[#1d4ed8]'
       : tone === 'jade'
-        ? 'border-[#86EFAC] bg-[#F0FDF4] text-[#16A34A]'
+        ? 'border-[#cbe6d5] bg-[#f2fbf5] text-[#15803d]'
         : tone === 'amber'
-          ? 'border-[#FDE047] bg-[#FEFCE8] text-[#CA8A04]'
+          ? 'border-[#efdfae] bg-[#fffbeb] text-[#92400e]'
           : tone === 'renewable'
-            ? 'border-[#7DD3FC] bg-[#F0F9FF] text-[#0284C7]'
+            ? 'border-[#c7e7f8] bg-[#f0f9ff] text-[#0369a1]'
             : tone === 'material'
-              ? 'border-[#FDE047] bg-[#FEFCE8] text-[#D97706]'
+              ? 'border-[#f3dfae] bg-[#fffbeb] text-[#b45309]'
               : tone === 'process'
-                ? 'border-[#D8B4FE] bg-[#FAF5FF] text-[#7C3AED]'
-                : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]'
+                ? 'border-[#ddd0fb] bg-[#f7f4ff] text-[#6d28d9]'
+                : 'border-line bg-elevated text-fg-dim'
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[12px] font-semibold tracking-tight shadow-2xs ${cls}`}
+      className={`inline-flex items-center rounded-[6px] border px-2 py-0.5 text-[11.5px] font-semibold tracking-tight ${cls}`}
     >
       {children}
     </span>
@@ -225,20 +328,25 @@ export function Empty({
   title,
   body,
   action,
+  icon,
 }: {
   title: string
   body: string
   action?: ReactNode
+  icon?: ReactNode
 }) {
   return (
-    <div className="flex flex-col items-start gap-2.5 px-5 py-14">
-      <h3 className="font-display text-[22px] font-semibold tracking-[-0.02em] text-fg">
+    <div className="flex flex-col items-center px-6 py-14 text-center">
+      <div className="flex h-11 w-11 items-center justify-center rounded-[11px] border border-line bg-elevated text-fg-faint">
+        {icon ?? <Inbox size={19} strokeWidth={1.8} />}
+      </div>
+      <h3 className="mt-4 font-display text-[19px] font-semibold tracking-[-0.025em] text-fg">
         {title}
       </h3>
-      <p className="max-w-[52ch] text-[13.5px] leading-relaxed text-fg-dim">
+      <p className="mt-1.5 max-w-[48ch] text-[13.5px] leading-relaxed text-fg-dim">
         {body}
       </p>
-      {action && <div className="mt-2">{action}</div>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   )
 }
@@ -250,20 +358,21 @@ export function BenchmarkGauge({
   value: number
   median: number
 }) {
-  const max = Math.max(2, Math.ceil(Math.max(value, median) * 1.15 * 2) / 2)
-  const W = 260
-  const H = 142
+  const rawMax = Math.max(value, median) * 1.18
+  const step = rawMax <= 1 ? 0.2 : rawMax <= 3 ? 0.5 : 1
+  const max = Math.max(step, Math.ceil(rawMax / step) * step)
+
+  const W = 300
+  const H = 172
   const cx = W / 2
-  const cy = 120
-  const r = 92
+  const cy = 142
+  const r = 105
 
   const [animProgress, setAnimProgress] = useState(0)
 
   useEffect(() => {
     setAnimProgress(0)
-    const t = setTimeout(() => {
-      setAnimProgress(1)
-    }, 60)
+    const t = setTimeout(() => setAnimProgress(1), 80)
     return () => clearTimeout(t)
   }, [value, median])
 
@@ -273,15 +382,14 @@ export function BenchmarkGauge({
     return [cx + radius * Math.cos(a), cy + radius * Math.sin(a)] as const
   }
 
-  const needle = polar(value * animProgress, r - 14)
-  const medianTick = polar(median, r + 7)
-  const medianInner = polar(median, r - 9)
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => {
-    const v = f * max
-    const outer = polar(v, r + 5)
-    const inner = polar(v, r - 7)
-    return { f, v, outer, inner }
-  })
+  const trackArc = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`
+  const circumference = Math.PI * r
+  const progress = Math.min(1, (value * animProgress) / max)
+  const end = polar(value * animProgress, r)
+  const medianOuter = polar(median, r + 9)
+  const medianInner = polar(median, r - 13)
+  const tick = polar(0, r)
+  const tickMax = polar(max, r)
 
   return (
     <div>
@@ -292,86 +400,98 @@ export function BenchmarkGauge({
         aria-label={`Carbon intensity ${value.toFixed(2)} against sector median ${median.toFixed(2)} tonnes CO2e per tonne`}
       >
         <path
-          d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+          d={trackArc}
           fill="none"
-          stroke="#E2E8F0"
-          strokeWidth={10}
+          stroke="#e9eef5"
+          strokeWidth={13}
           strokeLinecap="round"
         />
         <path
-          d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+          d={trackArc}
           fill="none"
-          stroke="#0F172A"
-          strokeWidth={10}
+          stroke="#0f172a"
+          strokeWidth={13}
           strokeLinecap="round"
-          strokeDasharray={`${Math.min(1, (value * animProgress) / max) * Math.PI * r} ${Math.PI * r}`}
-          style={{ transition: 'stroke-dasharray 750ms cubic-bezier(0.16, 1, 0.3, 1)' }}
+          strokeDasharray={`${progress * circumference} ${circumference}`}
+          style={{
+            transition: 'stroke-dasharray 800ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
         />
-        {ticks.map((t) => (
-          <line
-            key={t.f}
-            x1={t.inner[0]}
-            y1={t.inner[1]}
-            x2={t.outer[0]}
-            y2={t.outer[1]}
-            stroke={t.f === 0 || t.f === 1 ? '#64748B' : '#CBD5E1'}
-            strokeWidth={1.5}
-          />
-        ))}
+        <circle
+          cx={end[0]}
+          cy={end[1]}
+          r={4.5}
+          fill="#ffffff"
+          stroke="#0f172a"
+          strokeWidth={2.5}
+          style={{
+            opacity: animProgress > 0.2 ? 1 : 0,
+            transition:
+              'cx 800ms cubic-bezier(0.16, 1, 0.3, 1), cy 800ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease',
+          }}
+        />
         <line
           x1={medianInner[0]}
           y1={medianInner[1]}
-          x2={medianTick[0]}
-          y2={medianTick[1]}
-          stroke="#0284C7"
+          x2={medianOuter[0]}
+          y2={medianOuter[1]}
+          stroke="#0284c7"
           strokeWidth={3}
           strokeLinecap="round"
         />
-        <line
-          x1={cx}
-          y1={cy}
-          x2={needle[0]}
-          y2={needle[1]}
-          stroke="#0F172A"
-          strokeWidth={3}
-          strokeLinecap="round"
-          style={{ transition: 'x2 750ms cubic-bezier(0.16, 1, 0.3, 1), y2 750ms cubic-bezier(0.16, 1, 0.3, 1)' }}
-        />
-        <circle cx={cx} cy={cy} r={6} fill="#0F172A" />
-        <circle cx={cx} cy={cy} r={2.5} fill="#38BDF8" />
         <text
-          x={cx - r}
-          y={cy + 17}
+          x={cx}
+          y={cy - 24}
           textAnchor="middle"
-          fill="#64748B"
-          style={{ fontSize: 12, fontFamily: 'IBM Plex Mono', fontWeight: 500 }}
+          fill="#0a1222"
+          style={{
+            fontSize: 34,
+            fontFamily: 'Space Grotesk',
+            fontWeight: 700,
+            letterSpacing: '-0.045em',
+          }}
+        >
+          {value.toFixed(2)}
+        </text>
+        <text
+          x={cx}
+          y={cy - 5}
+          textAnchor="middle"
+          fill="#475569"
+          style={{ fontSize: 11.5, fontFamily: 'DM Sans', fontWeight: 600 }}
+        >
+          tCO₂e / t output
+        </text>
+        <text
+          x={tick[0]}
+          y={cy + 20}
+          textAnchor="middle"
+          fill="#64748b"
+          style={{ fontSize: 11, fontFamily: 'IBM Plex Mono', fontWeight: 600 }}
         >
           0
         </text>
         <text
-          x={cx + r}
-          y={cy + 17}
+          x={tickMax[0]}
+          y={cy + 20}
           textAnchor="middle"
-          fill="#64748B"
-          style={{ fontSize: 12, fontFamily: 'IBM Plex Mono', fontWeight: 500 }}
+          fill="#64748b"
+          style={{ fontSize: 11, fontFamily: 'IBM Plex Mono', fontWeight: 600 }}
         >
           {max.toFixed(1)}
         </text>
       </svg>
-      <div className="-mt-1 flex items-baseline justify-center gap-1.5">
-        <span className="num text-[25px] font-semibold leading-none text-fg">
-          {value.toFixed(2)}
-        </span>
-        <span className="text-[13px] text-iron">tCO₂e / t output</span>
-      </div>
-      <div className="mt-2.5 flex items-center justify-between border-t border-line pt-2 text-[12.5px]">
-        <span className="flex items-center gap-1.5 font-medium text-fg-dim">
-          <span className="h-2 w-2 rounded-full bg-[#0F172A]" />
+
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line pt-3 text-[12.5px]">
+        <span className="flex items-center gap-1.5 font-semibold text-fg-dim">
+          <span className="h-2 w-2 rounded-full bg-[#0f172a]" />
           Your intensity
+          <span className="num font-bold text-fg">{value.toFixed(2)}</span>
         </span>
-        <span className="flex items-center gap-1.5 font-medium text-fg-dim">
-          <span className="h-2 w-2 rounded-full bg-[#0284C7]" />
-          Median <span className="num font-semibold text-fg">{median.toFixed(2)}</span>
+        <span className="flex items-center gap-1.5 font-semibold text-fg-dim">
+          <span className="h-2.5 w-[3px] rounded-full bg-[#0284c7]" />
+          Median
+          <span className="num font-bold text-fg">{median.toFixed(2)}</span>
         </span>
       </div>
     </div>

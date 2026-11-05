@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Check, Factory, Flame, Loader2, Upload, Zap } from 'lucide-react'
 
 interface Props {
   label: string
@@ -8,6 +9,12 @@ interface Props {
   busy?: boolean
   done?: boolean
   onSelect: (file: File) => void
+}
+
+function iconFor(label: string) {
+  if (/electric/i.test(label)) return Zap
+  if (/fuel/i.test(label)) return Flame
+  return Factory
 }
 
 export function FileDropzone({
@@ -21,12 +28,15 @@ export function FileDropzone({
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
+  const Icon = iconFor(label)
 
   return (
     <div
       role="button"
       tabIndex={0}
       aria-disabled={busy}
+      aria-busy={busy}
+      aria-label={`Upload ${label}`}
       onClick={() => !busy && inputRef.current?.click()}
       onKeyDown={(e) => {
         if ((e.key === 'Enter' || e.key === ' ') && !busy) {
@@ -46,12 +56,12 @@ export function FileDropzone({
         if (f && !busy) onSelect(f)
       }}
       className={[
-        'cursor-pointer rounded-[4px] border-2 border-dashed p-3.5 text-left transition-colors',
+        'group cursor-pointer rounded-[10px] border bg-panel p-3.5 text-left transition-all duration-150',
         dragging
-          ? 'border-forge bg-forge-light'
+          ? 'border-forge bg-forge-light ring-2 ring-forge/15'
           : done
-            ? 'border-solid border-jade bg-jade-light'
-            : 'border-line-strong bg-panel hover:border-forge hover:bg-elevated',
+            ? 'border-[#cfe8d9] hover:border-[#a9d9bb]'
+            : 'border-line hover:border-line-strong hover:bg-[#fbfcfe]',
         busy ? 'pointer-events-none opacity-70' : '',
       ].join(' ')}
     >
@@ -69,55 +79,56 @@ export function FileDropzone({
 
       <div className="flex items-start gap-3">
         <div
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[2px] border ${
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border transition-colors ${
             done
-              ? 'border-jade/30 bg-panel text-jade'
-              : 'border-line bg-elevated text-fg-faint'
+              ? 'border-[#cfe8d9] bg-[#f1fbf4] text-jade'
+              : dragging
+                ? 'border-[#cfe0fd] bg-white text-forge'
+                : 'border-line bg-elevated text-[#64748b] group-hover:text-fg'
           }`}
         >
-          {done ? (
-            <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none">
-              <path
-                d="M3 8.5 6.2 11.5 13 4.5"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          {busy ? (
+            <Loader2 size={16} className="animate-spin text-forge" />
+          ) : done ? (
+            <Check size={16} strokeWidth={2.4} />
           ) : (
-            <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none">
-              <path
-                d="M8 11V3m0 0L4.8 6.2M8 3l3.2 3.2M3 12.5h10"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon size={16} strokeWidth={2} />
           )}
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="text-[13px] font-medium text-fg">{label}</div>
-          <div className="mt-0.5 truncate text-[12.5px] text-fg-faint">
+          <div className="flex items-center gap-2">
+            <span className="truncate text-[13px] font-semibold text-fg">
+              {label}
+            </span>
+            <span
+              className={`ml-auto shrink-0 rounded-[5px] border px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.05em] ${
+                busy
+                  ? 'border-[#cfe0fd] bg-[#f4f8ff] text-forge'
+                  : done
+                    ? 'border-[#cfe8d9] bg-[#f1fbf4] text-jade'
+                    : 'border-line bg-elevated text-[#5b6b82]'
+              }`}
+            >
+              {busy ? 'Reading' : done ? 'Linked' : 'Upload'}
+            </span>
+          </div>
+          <p className="mt-1 truncate text-[11.5px] font-medium text-[#64748b]">
             {busy
-              ? 'Reading document…'
+              ? 'Extracting line items…'
               : file
                 ? file.name
                 : done
-                  ? 'Extracted · ready to review'
+                  ? 'Extracted · review in the table'
                   : hint}
-          </div>
+          </p>
+          {!done && !busy && (
+            <p className="mt-1.5 flex items-center gap-1 text-[10.5px] font-semibold uppercase tracking-[0.04em] text-[#64748b]">
+              <Upload size={10} />
+              PDF · JPG · PNG
+            </p>
+          )}
         </div>
-
-        <span
-          className={`mt-0.5 shrink-0 text-[12px] font-medium uppercase tracking-[0.06em] ${
-            done ? 'text-jade' : 'text-iron'
-          }`}
-        >
-          {busy ? 'Wait' : done ? 'Done' : 'PDF'}
-        </span>
       </div>
     </div>
   )

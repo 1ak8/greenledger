@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   Activity,
   Building2,
+  ChevronRight,
   FileText,
   Files,
   LayoutDashboard,
@@ -72,54 +73,63 @@ export function AppShell() {
         <button
           aria-label="Close navigation"
           onClick={() => setOpen(false)}
-          className="fixed inset-0 z-30 bg-rail/50 lg:hidden"
+          className="fixed inset-0 z-30 bg-[#0a1222]/40 backdrop-blur-[2px] lg:hidden"
         />
       )}
 
       <aside
         className={[
-          'fixed inset-y-0 left-0 z-40 flex w-[268px] shrink-0 flex-col border-r border-[#CBD5E1] bg-[#F1F5F9]',
+          'fixed inset-y-0 left-0 z-40 flex w-[264px] shrink-0 flex-col border-r border-[#dde4ee] bg-[#f4f6fa]/95 backdrop-blur-xl',
           'transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen',
           open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}
       >
-        <div className="flex h-16 shrink-0 items-center gap-3 border-b border-[#CBD5E1] bg-white px-5">
+        <div className="flex h-16 shrink-0 items-center gap-3 border-b border-[#dde4ee] px-5">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2.5 text-left"
+            className="flex min-w-0 items-center gap-2.5 text-left"
             aria-label="Green Ledger overview"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-[7px] bg-[#16A34A] shadow-sm">
-              <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#16a34a] shadow-[0_2px_6px_rgba(22,163,74,0.28)]">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-[18px] w-[18px] text-white"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
                 <path d="M6 6h10" />
                 <path d="M6 10h7" />
                 <path d="M6 14h10" />
               </svg>
-            </div>
-            <div>
-              <span className="block font-display text-[17px] font-bold leading-tight tracking-[-0.025em] text-[#0F172A]">
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate font-display text-[17px] font-bold leading-tight tracking-[-0.03em] text-fg">
                 Green Ledger
               </span>
-              <span className="block text-[11px] font-semibold tracking-wider text-[#475569]">
+              <span className="block text-[9.5px] font-bold tracking-[0.14em] text-[#64748b]">
                 CARBON INTELLIGENCE
               </span>
-            </div>
+            </span>
           </button>
 
           <button
             onClick={() => setOpen(false)}
-            className="ml-auto flex h-8 w-8 items-center justify-center rounded-[5px] text-[#475569] transition-colors hover:bg-[#E2E8F0] hover:text-[#0F172A] lg:hidden"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-[7px] text-fg-dim transition-colors hover:bg-[#e5eaf2] hover:text-fg lg:hidden"
             aria-label="Close menu"
           >
             <X size={16} />
           </button>
         </div>
 
-        <nav aria-label="Workspace" className="flex-1 overflow-y-auto px-3.5 pb-4 pt-5">
-          <p className="mb-2.5 px-3 text-[11.5px] font-bold uppercase tracking-[0.08em] text-[#475569]">
-            Platform Menu
-          </p>
+        <nav
+          aria-label="Workspace"
+          className="flex-1 overflow-y-auto px-3 pb-4 pt-5"
+        >
+          <p className="eyebrow mb-2.5 px-2.5">Workspace</p>
           <ul className="space-y-1">
             {NAV.map((item) => {
               const Icon = item.icon
@@ -130,28 +140,35 @@ export function AppShell() {
                     end={item.end}
                     className={({ isActive }) =>
                       [
-                        'group flex h-10 items-center gap-3 rounded-[6px] px-3 text-[13.5px] font-semibold transition-all',
+                        'group relative flex h-10 items-center gap-2.5 rounded-[8px] border px-2.5 text-[13px] font-semibold transition-all duration-150',
                         isActive
-                          ? 'border border-[#CBD5E1] bg-white text-[#0F172A] shadow-sm'
-                          : 'text-[#334155] hover:bg-[#E2E8F0] hover:text-[#0F172A]',
+                          ? 'border-[#e1e7f0] bg-white text-fg shadow-[0_1px_2px_rgba(10,18,34,0.05)]'
+                          : 'border-transparent text-[#42526b] hover:border-[#e6ebf3] hover:bg-white/60 hover:text-fg',
                       ].join(' ')
                     }
                   >
                     {({ isActive }) => (
                       <>
-                        <div
+                        {isActive && (
+                          <span className="absolute -left-px top-2 bottom-2 w-[3px] rounded-r-full bg-jade" />
+                        )}
+                        <span
                           className={[
-                            'flex h-7 w-7 items-center justify-center rounded-[5px] transition-colors',
+                            'flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] transition-colors',
                             isActive
-                              ? 'bg-[#DCFCE7] text-[#16A34A]'
-                              : 'bg-transparent text-[#64748B] group-hover:text-[#0F172A]',
+                              ? 'bg-[#eaf7ee] text-jade'
+                              : 'text-[#64748b] group-hover:text-fg',
                           ].join(' ')}
                         >
-                          <Icon size={16} strokeWidth={isActive ? 2.4 : 2} />
-                        </div>
-                        <span className="flex-1">{item.label}</span>
+                          <Icon size={15.5} strokeWidth={isActive ? 2.4 : 2} />
+                        </span>
+                        <span className="flex-1 truncate">{item.label}</span>
                         {isActive && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
+                          <ChevronRight
+                            size={13}
+                            className="shrink-0 text-[#64748b]"
+                            aria-hidden="true"
+                          />
                         )}
                       </>
                     )}
@@ -162,105 +179,142 @@ export function AppShell() {
           </ul>
         </nav>
 
-        <div className="p-3.5">
+        <div className="border-t border-[#dde4ee] p-3">
           {company ? (
-            <div className="rounded-[8px] border border-[#CBD5E1] bg-white p-3.5 shadow-sm">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-[#16A34A]" aria-hidden="true" />
-                <span className="truncate text-[13.5px] font-bold text-[#0F172A]">
-                  {company.name}
+            <div className="rounded-[10px] border border-[#dde4ee] bg-white p-3.5 shadow-[0_2px_8px_rgba(10,18,34,0.04)]">
+              <div className="flex items-start gap-2.5">
+                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-[#d4ebdc] bg-[#f2fbf5] text-jade">
+                  <Building2 size={14} strokeWidth={2.2} />
                 </span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[13px] font-bold leading-tight text-fg">
+                    {company.name}
+                  </div>
+                  <p className="mt-1 truncate text-[11.5px] font-medium text-[#64748b]">
+                    {SECTOR_LABEL[company.sector] ?? company.sector} ·{' '}
+                    {company.state}
+                  </p>
+                </div>
               </div>
-              <p className="mt-1 text-[12px] font-medium text-[#475569]">
-                {SECTOR_LABEL[company.sector] ?? company.sector} · {company.state}
-              </p>
-              <div className="mt-3 flex items-center justify-between border-t border-[#E2E8F0] pt-2.5">
+              <div className="mt-3 flex items-center gap-1 border-t border-line pt-2.5">
                 <button
                   onClick={() => loadDemo()}
-                  className="rounded-[4px] px-2 py-1 text-[12px] font-bold text-[#16A34A] transition-colors hover:bg-[#DCFCE7]"
+                  className="rounded-[5px] px-2 py-1 text-[11.5px] font-bold text-jade transition-colors hover:bg-[#eaf7ee]"
                 >
-                  Demo
+                  Load demo
                 </button>
+                <span className="h-3 w-px bg-line" aria-hidden="true" />
                 <button
                   onClick={() => {
                     reset()
                     navigate('/company')
                   }}
-                  className="rounded-[4px] px-2 py-1 text-[12px] font-semibold text-[#475569] transition-colors hover:bg-[#F1F5F9] hover:text-[#0F172A]"
+                  className="rounded-[5px] px-2 py-1 text-[11.5px] font-semibold text-[#64748b] transition-colors hover:bg-elevated hover:text-fg"
                 >
                   Switch
                 </button>
+                <span className="ml-auto font-mono text-[10px] font-medium text-[#64748b]">
+                  FY26
+                </span>
               </div>
             </div>
           ) : (
-            <div className="rounded-[8px] border border-[#CBD5E1] bg-white p-3.5 shadow-sm">
-              <p className="text-[12.5px] font-medium text-[#475569]">No workspace loaded</p>
+            <div className="rounded-[10px] border border-[#dde4ee] bg-white p-3.5 shadow-[0_2px_8px_rgba(10,18,34,0.04)]">
+              <p className="text-[12.5px] font-semibold text-fg-dim">
+                No workspace loaded
+              </p>
               <div className="mt-2.5 flex flex-col gap-2">
                 <button
                   onClick={() => loadDemo()}
-                  className="btn btn-primary h-8.5 w-full text-[12.5px]"
+                  className="btn btn-primary h-9 w-full text-[12px]"
                 >
                   Load demo workspace
                 </button>
                 <button
                   onClick={() => navigate('/company')}
-                  className="text-left text-[12px] font-medium text-[#64748B] transition-colors hover:text-[#0F172A]"
+                  className="text-left text-[11.5px] font-semibold text-[#64748b] transition-colors hover:text-fg"
                 >
                   Create company profile
                 </button>
               </div>
             </div>
           )}
+          <p className="mt-3 flex items-center gap-1.5 px-1 text-[10.5px] font-medium text-[#5b6b82]">
+            <span className="h-1 w-1 rounded-full bg-jade" aria-hidden="true" />
+            All figures in tCO₂e
+          </p>
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-[52px] shrink-0 items-center gap-3 border-b border-line bg-panel px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-20 flex h-[60px] shrink-0 items-center gap-3 border-b border-line bg-white/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
           <button
             onClick={() => setOpen(true)}
-            className="btn btn-quiet h-8 w-8 p-0 lg:hidden"
+            className="btn btn-quiet h-9 w-9 p-0 lg:hidden"
             aria-label="Open menu"
           >
             <Menu size={18} />
           </button>
 
-          <div className="flex min-w-0 items-center gap-2 text-[13.5px]">
-            <span className="hidden max-w-[240px] truncate font-semibold text-[#0F172A] sm:block">
-              {company ? company.name : 'No workspace'}
+          <div className="flex min-w-0 items-center gap-2 text-[13px]">
+            <span className="hidden font-medium text-[#5b6b82] sm:inline">
+              Workspace
             </span>
-            <span className="hidden font-bold text-[#94A3B8] sm:inline" aria-hidden="true">
-              ›
-            </span>
-            <span className="truncate font-bold text-[#0F172A]">
+            <ChevronRight
+              size={13}
+              className="hidden shrink-0 text-[#b6c2d2] sm:block"
+              aria-hidden="true"
+            />
+            <span className="truncate font-semibold text-fg">
               {current.label}
             </span>
+            {company && (
+              <>
+                <span className="mx-1 hidden h-3.5 w-px bg-line md:block" />
+                <span className="hidden max-w-[240px] truncate text-[12.5px] font-medium text-[#64748b] md:block">
+                  {company.name}
+                </span>
+              </>
+            )}
           </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-2">
             {company && (
-              <span className="num hidden text-[13px] font-semibold text-[#475569] md:inline">
+              <span className="num hidden text-[12.5px] font-semibold text-[#52627a] lg:inline">
                 {company.annualProduction.toLocaleString('en-IN')}{' '}
                 {company.productionUnit}/yr
               </span>
             )}
             {store && (
-              <span className="hidden items-center gap-1.5 rounded-[4px] border border-[#CBD5E1] bg-white px-2 py-1 text-[12px] font-semibold text-[#475569] sm:inline-flex">
+              <span
+                className="hidden items-center gap-1.5 rounded-[6px] border border-line bg-white px-2 py-1 text-[11.5px] font-semibold text-fg-dim sm:inline-flex"
+                title={
+                  store === 'mongodb'
+                    ? 'Connected to MongoDB Atlas'
+                    : 'Running on the local file store'
+                }
+              >
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${
-                    store === 'mongodb' ? 'bg-[#16A34A]' : 'bg-[#CA8A04]'
+                    store === 'mongodb'
+                      ? 'bg-[#16a34a] pulse-dot'
+                      : 'bg-[#d97706]'
                   }`}
                 />
-                {store === 'mongodb' ? 'MongoDB' : 'Local store'}
+                {store === 'mongodb' ? 'MongoDB Atlas' : 'Local store'}
               </span>
             )}
-            <span className="rounded-[4px] border border-[#CBD5E1] bg-white px-2 py-1 text-[12px] font-semibold text-[#475569]">
+            <span className="rounded-[6px] border border-line bg-white px-2 py-1 text-[11.5px] font-semibold text-fg-dim">
               FY 2026–27
             </span>
           </div>
         </header>
 
         <main className="flex-1">
-          <div className="mx-auto w-full max-w-[1560px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <div
+            key={location.pathname}
+            className="page-in mx-auto w-full max-w-[1500px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9"
+          >
             <Outlet />
           </div>
         </main>

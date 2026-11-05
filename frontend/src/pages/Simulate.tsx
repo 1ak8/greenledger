@@ -6,10 +6,26 @@ import {
   type CSSProperties,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Pin } from 'lucide-react'
-import { PageHeader, Panel, Empty } from '../components/ui'
+import {
+  AlertCircle,
+  ArrowRight,
+  Ban,
+  Check,
+  Leaf,
+  PiggyBank,
+  Pin,
+  Play,
+  Timer,
+  Wallet,
+} from 'lucide-react'
+import { PageHeader, Panel, Empty, Stat, Bar } from '../components/ui'
 import { MaccChart } from '../components/MaccChart'
-import { simulate, pinSimulation, getInterventions, getSimulations } from '../lib/api'
+import {
+  simulate,
+  pinSimulation,
+  getInterventions,
+  getSimulations,
+} from '../lib/api'
 import { inr, tonnes } from '../lib/format'
 import { DEMO_BASELINE, DEMO_COMPANY, useSession } from '../lib/session'
 import type {
@@ -21,6 +37,13 @@ import type {
 
 const BUDGET_MIN = 0.25
 const BUDGET_MAX = 5
+
+const CATEGORY_DOT: Record<string, string> = {
+  energy_efficiency: 'bg-jade',
+  renewable: 'bg-[#0284c7]',
+  material: 'bg-[#d97706]',
+  process: 'bg-[#7c3aed]',
+}
 
 function formatCrore(v: number) {
   return v >= 1 ? `₹${v.toFixed(2)} Cr` : `₹${(v * 100).toFixed(0)} L`
@@ -55,15 +78,20 @@ function RangeControl({
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="text-[12.5px] font-medium text-[#475569]">
+        <label
+          htmlFor={id}
+          className="text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#52627a]"
+        >
           {label}
         </label>
         {!big && (
-          <span className="num text-[13px] font-bold text-[#0F172A]">{valueText}</span>
+          <span className="num text-[12px] font-semibold text-fg">
+            {valueText}
+          </span>
         )}
       </div>
       {big && (
-        <div className="num mt-1 text-[26px] font-bold leading-none text-[#0F172A]">
+        <div className="figure mt-1 text-[27px] leading-none text-fg">
           {valueText}
         </div>
       )}
@@ -75,11 +103,11 @@ function RangeControl({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="range mt-2"
+        className="range mt-2.5"
         style={{ '--fill': `${pct}%` } as CSSProperties}
       />
       {(left || right) && (
-        <div className="num mt-1 flex justify-between text-[11px] font-semibold text-[#64748B]">
+        <div className="num mt-0.5 flex justify-between text-[10px] font-medium text-[#64748b]">
           <span>{left}</span>
           <span>{right}</span>
         </div>
@@ -212,6 +240,9 @@ export function Simulate() {
   const all = library.length > 0 ? library : (result?.allInterventions ?? [])
   const selectedIds = sim?.selectedInterventions.map((i) => i.id) ?? []
   const enabledCount = all.filter((i) => toggles[i.id] !== false).length
+  const budgetPct = sim
+    ? Math.min(100, Math.round((sim.totalCapex / (budget * 1e7)) * 100))
+    : 0
 
   async function persistSimulation() {
     const res = await simulate({
@@ -241,11 +272,14 @@ export function Simulate() {
       const planName = `Plan ${String.fromCharCode(65 + pinned.length)} (${formatCrore(budget)})`
       const saved = await pinSimulation(id, planName)
       setPinned((p) => [saved, ...p])
-      setPinSuccess(`Saved as ${planName}!`)
+      setPinSuccess(`Saved as ${planName}`)
 
       // Auto-scroll to Pinned Plans section
       setTimeout(() => {
-        pinnedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        pinnedRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        })
       }, 100)
 
       setTimeout(() => setPinSuccess(null), 4000)
@@ -276,32 +310,30 @@ export function Simulate() {
     <>
       <PageHeader
         title="Investment simulation"
-        description="Configure capital and operational constraints. The knapsack decision engine computes the highest-ROI green portfolio."
+        description="Set capital and operating constraints. The knapsack engine returns the portfolio that abates the most within them."
         action={
           <div className="flex flex-col items-end gap-2">
             <div className="flex items-center gap-2">
               <button
                 onClick={onPin}
                 disabled={!sim || savingPin}
-                className="btn btn-secondary shadow-sm hover:border-[#2563EB]"
+                className="btn btn-secondary"
               >
-                <Pin size={15} className={savingPin ? 'animate-bounce text-[#2563EB]' : 'text-[#2563EB]'} />
+                <Pin size={14} className="text-forge" />
                 {savingPin ? 'Pinning…' : 'Pin as plan'}
               </button>
               <button
                 onClick={onBuildReport}
                 disabled={!sim || savingPin}
-                className="btn btn-primary shadow-sm"
+                className="btn btn-primary"
               >
                 Build report
                 <ArrowRight size={15} />
               </button>
             </div>
             {pinSuccess && (
-              <span className="flex items-center gap-1.5 rounded-full border border-[#86EFAC] bg-[#F0FDF4] px-2.5 py-0.5 text-[11.5px] font-bold text-[#16A34A] shadow-xs">
-                <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none">
-                  <path d="M3 8.5 6 11.5 13 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <span className="flex items-center gap-1.5 rounded-full border border-[#cbe6d5] bg-[#f2fbf5] px-2.5 py-1 text-[11px] font-bold text-jade shadow-[0_1px_2px_rgba(10,18,34,0.04)]">
+                <Check size={12} strokeWidth={2.6} />
                 {pinSuccess}
               </span>
             )}
@@ -309,149 +341,153 @@ export function Simulate() {
         }
       />
 
-      {/* Top Level: 4 Key Result KPI Cards */}
+      {/* Key result cards */}
       {sim && sim.selectedInterventions.length > 0 && (
-        <div className="mb-6 grid grid-cols-2 gap-3.5 xl:grid-cols-4">
-          <div className="rounded-[8px] border-2 border-[#93C5FD] bg-[#EFF6FF] p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] font-bold uppercase tracking-wider text-[#1E40AF]">
-                Capital Deployed
-              </span>
-              <span className="rounded-full border border-[#93C5FD] bg-white px-2 py-0.5 text-[11px] font-bold text-[#2563EB]">
-                Budget {formatCrore(budget)}
-              </span>
-            </div>
-            <div className="mt-2.5 flex items-baseline gap-1.5">
-              <span className="num text-[28px] font-bold leading-none text-[#1E3A8A]">
-                {inr(sim.totalCapex)}
-              </span>
-            </div>
-            <p className="mt-2 text-[12px] font-medium text-[#3B82F6]">
-              {Math.round((sim.totalCapex / (budget * 1e7)) * 100)}% budget utilized
-            </p>
-          </div>
-
-          <div className="rounded-[8px] border-2 border-[#86EFAC] bg-[#F0FDF4] p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] font-bold uppercase tracking-wider text-[#166534]">
-                CO₂ Abatement
-              </span>
-              <span className="rounded-full border border-[#86EFAC] bg-white px-2 py-0.5 text-[11px] font-bold text-[#16A34A]">
-                Optimal
-              </span>
-            </div>
-            <div className="mt-2.5 flex items-baseline gap-1.5">
-              <span className="num text-[28px] font-bold leading-none text-[#14532D]">
-                {tonnes(sim.totalAbatement)}
-              </span>
-              <span className="text-[13px] font-bold text-[#16A34A]">tCO₂e/yr</span>
-            </div>
-            <p className="mt-2 text-[12px] font-medium text-[#15803D]">
-              {(
-                (sim.totalAbatement / activeBaseline.totalEmissions) *
-                100
-              ).toFixed(1)}
-              % cut from annual baseline
-            </p>
-          </div>
-
-          <div className="rounded-[8px] border-2 border-[#CBD5E1] bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] font-bold uppercase tracking-wider text-[#475569]">
-                Annual Savings
-              </span>
-              <span className="rounded-full border border-[#CBD5E1] bg-[#F8FAFC] px-2 py-0.5 text-[11px] font-bold text-[#16A34A]">
-                Recurring
-              </span>
-            </div>
-            <div className="mt-2.5 flex items-baseline gap-1.5">
-              <span className="num text-[28px] font-bold leading-none text-[#16A34A]">
-                {inr(sim.totalSavings)}
-              </span>
-              <span className="text-[13px] font-semibold text-[#64748B]">/ year</span>
-            </div>
-            <p className="mt-2 text-[12px] font-medium text-[#64748B]">
-              Power & fuel operating savings
-            </p>
-          </div>
-
-          <div className="rounded-[8px] border-2 border-[#CBD5E1] bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] font-bold uppercase tracking-wider text-[#475569]">
-                Blended Payback
-              </span>
-              <span className="rounded-full border border-[#CBD5E1] bg-[#F8FAFC] px-2 py-0.5 text-[11px] font-bold text-[#0F172A]">
-                Ceiling {paybackCeiling}y
-              </span>
-            </div>
-            <div className="mt-2.5 flex items-baseline gap-1.5">
-              <span className="num text-[28px] font-bold leading-none text-[#0F172A]">
-                {sim.blendedPayback}
-              </span>
-              <span className="text-[13px] font-semibold text-[#64748B]">years</span>
-            </div>
-            <p className="mt-2 text-[12px] font-medium text-[#64748B]">
-              Total capex amortized by savings
-            </p>
-          </div>
+        <div className="mb-5 grid grid-cols-1 gap-3.5 min-[440px]:grid-cols-2 xl:grid-cols-4">
+          <Stat
+            label="Capital deployed"
+            value={inr(sim.totalCapex)}
+            hint={`${budgetPct}% of ${formatCrore(budget)} budget`}
+            tone="accent"
+            icon={<Wallet size={14} />}
+            bar={budgetPct}
+            barTone="forge"
+          />
+          <Stat
+            label="CO₂ abatement"
+            value={tonnes(sim.totalAbatement)}
+            unit="tCO₂e / yr"
+            hint={`${(
+              (sim.totalAbatement / activeBaseline.totalEmissions) *
+              100
+            ).toFixed(1)}% cut from annual baseline`}
+            tone="positive"
+            icon={<Leaf size={14} />}
+          />
+          <Stat
+            label="Annual savings"
+            value={inr(sim.totalSavings)}
+            unit="/ year"
+            hint="Power and fuel operating savings"
+            tone="muted"
+            icon={<PiggyBank size={14} />}
+          />
+          <Stat
+            label="Blended payback"
+            value={`${sim.blendedPayback}`}
+            unit="years"
+            hint={`Ceiling ${paybackCeiling} yrs · capex amortised by savings`}
+            tone="muted"
+            icon={<Timer size={14} />}
+          />
         </div>
       )}
 
-      {/* Main 2-Column Balanced Workspace */}
-      <div className="grid items-start gap-6 xl:grid-cols-[330px_1fr]">
-        {/* Left Column: Constraints & Controls */}
+      {/* Main workspace */}
+      <div className="grid items-start gap-5 xl:grid-cols-[340px_minmax(0,1fr)]">
+        {/* Controls */}
         <div className="space-y-4">
-          <div className="card overflow-hidden border-2 border-[#CBD5E1]">
-            <header className="flex h-11 items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4">
-              <h2 className="panel-title">Assumptions & Controls</h2>
-              {loading && (
-                <span className="flex items-center gap-1.5 text-[11.5px] font-bold text-[#2563EB]">
-                  <svg className="h-3.5 w-3.5 animate-spin text-[#2563EB]" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+          <Panel
+            title="Assumptions"
+            meta="0/1 knapsack"
+            accent
+            action={
+              loading ? (
+                <span className="flex items-center gap-1.5 text-[11px] font-bold text-forge">
+                  <svg
+                    className="h-3.5 w-3.5 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    />
                   </svg>
-                  Calculating…
+                  Calculating
                 </span>
-              )}
-            </header>
-
-            <div className="space-y-4 p-4">
-              {/* Primary Run Trigger Button */}
-              <div className="rounded-[6px] border border-[#CBD5E1] bg-[#F1F5F9] p-2.5">
+              ) : (
+                <span className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[#5b6b82]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-jade" />
+                  Ready
+                </span>
+              )
+            }
+          >
+            <div className="space-y-4">
+              {/* Primary run trigger */}
+              <div className="rounded-[9px] border border-line bg-[#fbfcfe] p-2.5">
                 <button
                   onClick={onRunSimulation}
                   disabled={loading}
-                  className={`btn h-10 w-full text-[13px] font-bold shadow-sm transition-all ${
+                  className={`btn h-11 w-full text-[13px] font-bold ${
                     hasPendingChanges
-                      ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] ring-2 ring-[#93C5FD] ring-offset-1'
-                      : 'bg-[#0F172A] text-white hover:bg-[#1E293B]'
+                      ? 'bg-forge text-white shadow-[0_2px_8px_rgba(37,99,235,0.24)] hover:bg-forge-bright'
+                      : 'btn-primary'
                   }`}
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
-                      <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      <svg
+                        className="h-4 w-4 animate-spin text-white"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
                       </svg>
-                      Optimizing (2s)…
+                      Optimising portfolio…
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none">
-                        <polygon points="4,2 14,8 4,14" fill="currentColor" />
-                      </svg>
-                      {hasPendingChanges ? 'Run simulation with changes' : 'Re-run simulation'}
+                      <Play size={13} fill="currentColor" />
+                      {hasPendingChanges ? 'Run with changes' : 'Re-run simulation'}
                     </span>
                   )}
                 </button>
-                {hasPendingChanges && !loading && (
-                  <p className="mt-1.5 text-center text-[11px] font-bold text-[#2563EB]">
-                    ● Parameters modified. Click to calculate.
-                  </p>
-                )}
+                <p
+                  className={`mt-2 flex items-center justify-center gap-1.5 text-center text-[10.5px] font-semibold ${
+                    hasPendingChanges && !loading
+                      ? 'text-forge'
+                      : 'text-[#5b6b82]'
+                  }`}
+                >
+                  {hasPendingChanges && !loading ? (
+                    <>
+                      <span className="h-1.5 w-1.5 rounded-full bg-forge" />
+                      Parameters changed — recalculate
+                    </>
+                  ) : loading ? (
+                    'Infeasible combinations are excluded first'
+                  ) : (
+                    <>
+                      <Check size={11} strokeWidth={2.6} />
+                      Results match current assumptions
+                    </>
+                  )}
+                </p>
               </div>
 
-              {/* Sliders */}
               <RangeControl
                 id="budget"
                 label="Capital budget"
@@ -503,22 +539,24 @@ export function Simulate() {
 
               <div className="h-px bg-line" />
 
-              {/* Toggles */}
               <div>
-                <div className="mb-2 flex items-baseline justify-between">
-                  <span className="text-[12.5px] font-semibold text-[#334155]">
-                    Candidate Measures
+                <div className="mb-2 flex items-baseline justify-between gap-2">
+                  <span className="text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#52627a]">
+                    Candidate measures
                   </span>
-                  <span className="num text-[12px] font-bold text-[#64748B]">
+                  <span className="num text-[11px] font-semibold text-[#5b6b82]">
                     {enabledCount}/{all.length} active
                   </span>
                 </div>
-                <ul className="divide-y divide-[#F1F5F9] rounded-[6px] border border-[#E2E8F0] bg-white">
+                <ul className="overflow-hidden rounded-[9px] border border-line bg-white">
                   {all.map((i: Intervention) => {
                     const checked = toggles[i.id] !== false
                     return (
-                      <li key={i.id} className="p-2.5">
-                        <label className="flex cursor-pointer items-start gap-2.5">
+                      <li
+                        key={i.id}
+                        className="border-b border-[#eff2f7] last:border-b-0"
+                      >
+                        <label className="flex cursor-pointer items-start gap-2.5 px-3 py-2.5 transition-colors hover:bg-[#fbfcfe]">
                           <input
                             type="checkbox"
                             checked={checked}
@@ -530,18 +568,27 @@ export function Simulate() {
                             }
                             className="checkbox mt-0.5"
                           />
-                          <div className="min-w-0 flex-1">
-                            <span
-                              className={`block text-[12.5px] leading-tight ${
-                                checked ? 'font-semibold text-[#0F172A]' : 'text-[#94A3B8]'
-                              }`}
-                            >
-                              {i.name}
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-center gap-1.5">
+                              <span
+                                className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                                  CATEGORY_DOT[i.category] ?? 'bg-[#94a3b8]'
+                                }`}
+                              />
+                              <span
+                                className={`truncate text-[12px] leading-tight ${
+                                  checked
+                                    ? 'font-semibold text-fg'
+                                    : 'font-medium text-[#64748b]'
+                                }`}
+                              >
+                                {i.name}
+                              </span>
                             </span>
-                            <span className="num mt-0.5 block text-[11px] text-[#64748B]">
-                              {inr(i.capex)} · {i.co2Abated}t · {i.payback}y
+                            <span className="num mt-1 block text-[10.5px] font-medium text-[#5b6b82]">
+                              {inr(i.capex)} · {i.co2Abated} t · {i.payback} yr
                             </span>
-                          </div>
+                          </span>
                         </label>
                       </li>
                     )
@@ -549,46 +596,55 @@ export function Simulate() {
                 </ul>
               </div>
             </div>
-          </div>
+          </Panel>
 
-          {/* Left Out / Excluded Card */}
           {sim && sim.excludedInterventions.length > 0 && (
-            <Panel title="Screened out & Why" flush>
-              <div className="overflow-x-auto">
-                <table className="data-table">
-                  <tbody>
-                    {sim.excludedInterventions.map((e) => (
-                      <tr key={e.id}>
-                        <td className="text-[12.5px] font-semibold text-[#334155]">
-                          {e.name}
-                        </td>
-                        <td className="text-right text-[12px] font-medium text-[#64748B]">
-                          {e.reason}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <Panel
+              title="Screened out"
+              meta="Constraint filters"
+              flush
+            >
+              <ul className="divide-y divide-line">
+                {sim.excludedInterventions.map((e) => (
+                  <li key={e.id} className="flex items-start gap-2.5 px-4 py-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-line bg-elevated text-[#64748b]">
+                      <Ban size={11} strokeWidth={2.2} />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[12px] font-semibold leading-tight text-fg">
+                        {e.name}
+                      </p>
+                      <p className="mt-0.5 text-[10.5px] font-medium text-[#5b6b82]">
+                        {e.reason}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </Panel>
           )}
         </div>
 
-        {/* Right Column: Visualization & Structured Tables */}
+        {/* Results */}
         <div className="min-w-0 space-y-5">
           {error && (
             <div
               role="alert"
-              className="rounded-[6px] border border-red/30 border-l-[4px] border-l-red bg-red/10 p-3 text-[13px] font-medium text-red"
+              className="flex items-start gap-2.5 rounded-[9px] border border-[#f3d6d6] bg-[#fef5f5] px-4 py-3 text-[12.5px] font-medium text-[#b91c1c]"
             >
+              <AlertCircle size={15} className="mt-0.5 shrink-0" />
               {error}
             </div>
           )}
 
-          {/* Upright Graph */}
           <Panel
             title="Abatement potential by measure"
-            meta="Annual carbon reduction (tCO₂e) with investment status"
+            meta={`${selectedIds.length} of ${all.length} in portfolio`}
+            action={
+              <span className="text-[11px] font-medium text-[#5b6b82]">
+                Annual carbon reduction
+              </span>
+            }
           >
             <MaccChart
               interventions={all}
@@ -597,12 +653,32 @@ export function Simulate() {
             />
           </Panel>
 
-          {/* Selected Interventions Table */}
           {sim && sim.selectedInterventions.length > 0 ? (
             <Panel
-              title="Selected portfolio composition"
+              title="Selected portfolio"
               meta={`${sim.selectedInterventions.length} projects recommended`}
               flush
+              footer={
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <div className="min-w-[180px] flex-1">
+                    <div className="mb-1.5 flex items-baseline justify-between text-[11px]">
+                      <span className="font-semibold text-fg-dim">
+                        Budget utilisation
+                      </span>
+                      <span className="num font-semibold text-fg">
+                        {inr(sim.totalCapex)}{' '}
+                        <span className="text-[#5b6b82]">
+                          / {inr(budget * 1e7)}
+                        </span>
+                      </span>
+                    </div>
+                    <Bar value={budgetPct} max={100} tone="forge" height={5} />
+                  </div>
+                  <span className="num rounded-[5px] border border-line bg-white px-2 py-1 text-[11px] font-bold text-[#52627a]">
+                    {budgetPct}% utilised
+                  </span>
+                </div>
+              }
             >
               <div className="overflow-x-auto">
                 <table className="data-table">
@@ -611,47 +687,47 @@ export function Simulate() {
                       <th>Intervention</th>
                       <th className="text-right">Capex</th>
                       <th className="text-right">Abatement</th>
-                      <th className="text-right">Annual Savings</th>
+                      <th className="text-right">Annual savings</th>
                       <th className="text-right">Payback</th>
                     </tr>
                   </thead>
                   <tbody>
                     {sim.selectedInterventions.map((i) => (
                       <tr key={i.id}>
-                        <td className="whitespace-nowrap font-semibold text-[#0F172A]">
+                        <td className="whitespace-nowrap font-semibold">
                           <span className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full bg-[#16A34A]" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-jade" />
                             {i.name}
                           </span>
                         </td>
-                        <td className="num whitespace-nowrap text-right font-medium text-[#475569]">
+                        <td className="num whitespace-nowrap text-right font-medium text-fg-dim">
                           {inr(i.capex)}
                         </td>
-                        <td className="num whitespace-nowrap text-right font-bold text-[#0F172A]">
+                        <td className="num whitespace-nowrap text-right font-semibold text-fg">
                           {tonnes(i.co2Abated)} tCO₂e
                         </td>
-                        <td className="num whitespace-nowrap text-right font-bold text-[#16A34A]">
+                        <td className="num whitespace-nowrap text-right font-semibold text-jade">
                           {inr(i.annualSavings)}
                         </td>
-                        <td className="num whitespace-nowrap text-right font-semibold text-[#475569]">
+                        <td className="num whitespace-nowrap text-right font-medium text-fg-dim">
                           {i.payback} yrs
                         </td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-[#F8FAFC]">
-                      <td className="font-bold text-[#0F172A]">Total Portfolio</td>
-                      <td className="num text-right font-bold text-[#0F172A]">
+                    <tr>
+                      <td className="font-semibold">Portfolio total</td>
+                      <td className="num text-right font-semibold text-fg">
                         {inr(sim.totalCapex)}
                       </td>
-                      <td className="num text-right font-bold text-[#0F172A]">
+                      <td className="num text-right font-semibold text-fg">
                         {tonnes(sim.totalAbatement)} tCO₂e
                       </td>
-                      <td className="num text-right font-bold text-[#16A34A]">
+                      <td className="num text-right font-semibold text-jade">
                         {inr(sim.totalSavings)}
                       </td>
-                      <td className="num text-right font-bold text-[#0F172A]">
+                      <td className="num text-right font-semibold text-fg">
                         {sim.blendedPayback} yrs
                       </td>
                     </tr>
@@ -668,7 +744,6 @@ export function Simulate() {
             </Panel>
           )}
 
-          {/* 2-Column Grid: 5-Year Projection & Sensitivity Analysis */}
           <div className="grid gap-5 xl:grid-cols-2">
             {sim && sim.projection.length > 0 && (
               <Panel
@@ -682,21 +757,23 @@ export function Simulate() {
                       <tr>
                         <th>Year</th>
                         <th className="text-right">Emissions</th>
-                        <th className="text-right">Annual Saving</th>
+                        <th className="text-right">Annual saving</th>
                         <th className="text-right">Cumulative</th>
                       </tr>
                     </thead>
                     <tbody>
                       {sim.projection.map((p) => (
                         <tr key={p.year}>
-                          <td className="num font-semibold text-[#475569]">{p.year}</td>
-                          <td className="num text-right font-medium text-[#0F172A]">
+                          <td className="num font-semibold text-fg-dim">
+                            {p.year}
+                          </td>
+                          <td className="num text-right font-medium text-fg">
                             {tonnes(p.emissions)} t
                           </td>
-                          <td className="num text-right font-bold text-[#16A34A]">
+                          <td className="num text-right font-semibold text-jade">
                             {inr(p.savings)}
                           </td>
-                          <td className="num text-right font-semibold text-[#0F172A]">
+                          <td className="num text-right font-semibold text-fg">
                             {inr(p.cumulative)}
                           </td>
                         </tr>
@@ -713,7 +790,7 @@ export function Simulate() {
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>Assumption Shift</th>
+                        <th>Assumption shift</th>
                         <th className="text-right">Payback</th>
                         <th className="text-right">Change</th>
                       </tr>
@@ -721,15 +798,15 @@ export function Simulate() {
                     <tbody>
                       {result.sensitivity.map((s: SensitivityRow) => (
                         <tr key={s.assumption}>
-                          <td className="text-[12.5px] font-semibold text-[#334155]">
+                          <td className="text-[12px] font-semibold text-fg-dim">
                             {s.assumption}
                           </td>
-                          <td className="num text-right font-bold text-[#0F172A]">
+                          <td className="num text-right font-semibold text-fg">
                             {s.payback} yrs
                           </td>
                           <td
-                            className={`num text-right font-bold ${
-                              s.delta > 0 ? 'text-[#DC2626]' : 'text-[#16A34A]'
+                            className={`num text-right font-semibold ${
+                              s.delta > 0 ? 'text-red' : 'text-jade'
                             }`}
                           >
                             {s.delta > 0 ? '+' : ''}
@@ -744,49 +821,72 @@ export function Simulate() {
             )}
           </div>
 
-          {/* Pinned Plans Section - High-Profile Comparison Hub */}
+          {/* Pinned plans */}
           <div ref={pinnedRef} className="scroll-mt-6">
             {pinned.length > 0 && (
               <Panel
-                title="Pinned Plans & Comparison Hub"
-                meta={`${pinned.length} saved portfolio${pinned.length > 1 ? 's' : ''} ready for review`}
+                title="Pinned plans"
+                meta={`${pinned.length} saved portfolio${
+                  pinned.length > 1 ? 's' : ''
+                } ready for comparison`}
                 accent
               >
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
                   {pinned.map((p) => (
                     <div
                       key={p._id}
-                      className="group relative rounded-[8px] border-2 border-[#CBD5E1] bg-white p-4 shadow-sm transition-all hover:border-[#2563EB] hover:shadow-md"
+                      className="hover-lift group rounded-[10px] border border-line bg-white p-4 hover:border-[#c9d8f7]"
                     >
-                      <div className="mb-3 flex items-center justify-between border-b border-[#F1F5F9] pb-2.5">
-                        <div className="flex items-center gap-1.5">
-                          <Pin size={14} className="text-[#2563EB]" />
-                          <span className="text-[13.5px] font-bold text-[#0F172A]">
+                      <div className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+                        <div className="flex min-w-0 items-center gap-1.5">
+                          <Pin
+                            size={13}
+                            className="shrink-0 text-forge"
+                            fill="currentColor"
+                          />
+                          <span className="truncate text-[12.5px] font-bold text-fg">
                             {p.label}
                           </span>
                         </div>
-                        <span className="num rounded-full border border-[#93C5FD] bg-[#EFF6FF] px-2.5 py-0.5 text-[11.5px] font-bold text-[#2563EB]">
+                        <span className="num shrink-0 rounded-[5px] border border-[#d2e1fd] bg-[#f4f8ff] px-2 py-0.5 text-[10.5px] font-bold text-forge-bright">
                           {formatCrore(p.budget / 1e7)}
                         </span>
                       </div>
-                      <dl className="space-y-2 text-[12.5px]">
-                        <div className="flex items-baseline justify-between">
-                          <dt className="font-medium text-[#64748B]">Capital deployed</dt>
-                          <dd className="num font-bold text-[#0F172A]">{inr(p.totalCapex)}</dd>
-                        </div>
-                        <div className="flex items-baseline justify-between">
-                          <dt className="font-medium text-[#64748B]">CO₂ abated</dt>
-                          <dd className="num font-bold text-[#0F172A]">
-                            {tonnes(p.totalAbatement)} <span className="text-[11px] font-normal text-[#64748B]">t/yr</span>
+                      <dl className="mt-2.5 space-y-1.5 text-[11.5px]">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <dt className="font-medium text-[#5b6b82]">
+                            Capital deployed
+                          </dt>
+                          <dd className="num font-semibold text-fg">
+                            {inr(p.totalCapex)}
                           </dd>
                         </div>
-                        <div className="flex items-baseline justify-between">
-                          <dt className="font-medium text-[#64748B]">Annual savings</dt>
-                          <dd className="num font-bold text-[#16A34A]">{inr(p.totalSavings)}</dd>
+                        <div className="flex items-baseline justify-between gap-2">
+                          <dt className="font-medium text-[#5b6b82]">
+                            CO₂ abated
+                          </dt>
+                          <dd className="num font-semibold text-fg">
+                            {tonnes(p.totalAbatement)}{' '}
+                            <span className="text-[10px] font-medium text-[#5b6b82]">
+                              t/yr
+                            </span>
+                          </dd>
                         </div>
-                        <div className="flex items-baseline justify-between border-t border-[#F1F5F9] pt-1.5">
-                          <dt className="font-medium text-[#64748B]">Blended payback</dt>
-                          <dd className="num font-bold text-[#0F172A]">{p.blendedPayback} yrs</dd>
+                        <div className="flex items-baseline justify-between gap-2">
+                          <dt className="font-medium text-[#5b6b82]">
+                            Annual savings
+                          </dt>
+                          <dd className="num font-semibold text-jade">
+                            {inr(p.totalSavings)}
+                          </dd>
+                        </div>
+                        <div className="flex items-baseline justify-between gap-2 border-t border-line pt-1.5">
+                          <dt className="font-medium text-[#5b6b82]">
+                            Blended payback
+                          </dt>
+                          <dd className="num font-semibold text-fg">
+                            {p.blendedPayback} yrs
+                          </dd>
                         </div>
                       </dl>
                       <button
@@ -796,9 +896,10 @@ export function Simulate() {
                           setTariff(p.tariffAssumption || tariff)
                           window.scrollTo({ top: 0, behavior: 'smooth' })
                         }}
-                        className="mt-3.5 flex w-full items-center justify-center gap-1.5 rounded-[5px] border border-[#CBD5E1] bg-[#F8FAFC] py-1.5 text-[12px] font-bold text-[#334155] transition-colors hover:border-[#2563EB] hover:bg-[#EFF6FF] hover:text-[#2563EB]"
+                        className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-[6px] border border-line bg-[#fbfcfe] py-1.5 text-[11.5px] font-bold text-fg-dim transition-colors hover:border-[#c9d8f7] hover:bg-[#f4f8ff] hover:text-forge-bright"
                       >
                         Load into simulator
+                        <ArrowRight size={11} />
                       </button>
                     </div>
                   ))}
