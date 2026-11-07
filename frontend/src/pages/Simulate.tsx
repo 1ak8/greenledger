@@ -343,7 +343,10 @@ export function Simulate() {
 
       {/* Key result cards */}
       {sim && sim.selectedInterventions.length > 0 && (
-        <div className="mb-5 grid grid-cols-1 gap-3.5 min-[440px]:grid-cols-2 xl:grid-cols-4">
+        <div
+          key={`${sim.totalCapex}-${sim.totalAbatement}-${sim.selectedInterventions.length}`}
+          className="results-in mb-5 grid grid-cols-1 gap-3.5 min-[440px]:grid-cols-2 xl:grid-cols-4"
+        >
           <Stat
             label="Capital deployed"
             value={inr(sim.totalCapex)}

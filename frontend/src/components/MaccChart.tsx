@@ -43,12 +43,13 @@ export function MaccChart({
 }: Props) {
   const [hovered, setHovered] = useState<Intervention | null>(null)
   const [animScale, setAnimScale] = useState(0)
+  const selectionKey = selectedIds?.join('|') ?? ''
 
   useEffect(() => {
     setAnimScale(0)
     const t = setTimeout(() => setAnimScale(1), 80)
     return () => clearTimeout(t)
-  }, [interventions])
+  }, [interventions, selectionKey])
 
   if (!interventions.length) {
     return (
@@ -211,6 +212,7 @@ export function MaccChart({
                   style={{
                     transition:
                       'height 700ms cubic-bezier(0.16, 1, 0.3, 1), y 700ms cubic-bezier(0.16, 1, 0.3, 1), fill 160ms ease',
+                    transitionDelay: `${Math.min(idx, 8) * 45}ms`,
                   }}
                 />
 
@@ -282,7 +284,8 @@ export function MaccChart({
       </div>
 
       <div
-        className="mt-2 rounded-[8px] border border-line bg-elevated px-4 py-3"
+        key={active.id}
+        className="detail-in mt-2 rounded-[8px] border border-line bg-elevated px-4 py-3"
         aria-live="polite"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">

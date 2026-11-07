@@ -1,12 +1,94 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Inbox } from 'lucide-react'
+
+function parseMetric(value: string) {
+  const match = value.match(/-?\d[\d,]*(?:\.\d+)?/)
+  if (!match || match.index === undefined) return null
+  const token = match[0]
+  const target = Number(token.replace(/,/g, ''))
+  if (!Number.isFinite(target)) return null
+  return {
+    target,
+    decimals: token.includes('.') ? token.split('.')[1].length : 0,
+    grouped: token.includes(','),
+    prefix: value.slice(0, match.index),
+    suffix: value.slice(match.index + token.length),
+  }
+}
+
+function composeMetric(
+  parsed: NonNullable<ReturnType<typeof parseMetric>>,
+  value: number,
+) {
+  const body = parsed.grouped
+    ? value.toLocaleString('en-IN', {
+        minimumFractionDigits: parsed.decimals,
+        maximumFractionDigits: parsed.decimals,
+      })
+    : value.toFixed(parsed.decimals)
+  return parsed.prefix + body + parsed.suffix
+}
+
+function prefersReducedMotion() {
+  return (
+    typeof window !== 'undefined' &&
+    Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
+  )
+}
+
+export function AnimatedValue({ value }: { value: string }) {
+  const parsed = parseMetric(value)
+  const [display, setDisplay] = useState(() => {
+    if (!parsed || prefersReducedMotion()) return value
+    return composeMetric(parsed, 0)
+  })
+  const previous = useRef<number | null>(null)
+
+  useEffect(() => {
+    const metric = parsed
+    if (!metric || prefersReducedMotion()) {
+      setDisplay(value)
+      if (metric) previous.current = metric.target
+      return
+    }
+
+    const from = previous.current ?? 0
+    const to = metric.target
+    if (from === to) {
+      previous.current = to
+      setDisplay(value)
+      return
+    }
+
+    let frame = 0
+    const started = performance.now()
+    const duration = 900
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - started) / duration)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplay(composeMetric(metric, from + (to - from) * eased))
+      if (progress < 1) frame = requestAnimationFrame(tick)
+      else {
+        previous.current = to
+        setDisplay(value)
+      }
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [value])
+
+  return <>{display}</>
+}
 
 export function LedgerRule({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-3 ${className}`} aria-hidden="true">
-      <span className="h-[2px] w-12 shrink-0 bg-fg" />
-      <span className="h-px flex-1 bg-line" />
-      <span className="h-1.5 w-1.5 shrink-0 rounded-[1px] bg-jade" />
+    <div
+      className={`ledger-rule flex items-center gap-3 ${className}`}
+      aria-hidden="true"
+    >
+      <span className="ledger-bar h-[2px] w-12 shrink-0 bg-fg" />
+      <span className="ledger-line h-px flex-1 bg-line" />
+      <span className="ledger-dot h-1.5 w-1.5 shrink-0 rounded-[1px] bg-jade" />
     </div>
   )
 }
@@ -192,7 +274,7 @@ export function Stat({
   const t = STAT_TONES[tone]
   return (
     <div
-      className={`relative overflow-hidden rounded-[12px] border p-4 shadow-[0_1px_2px_rgba(10,18,34,0.03)] sm:p-5 ${t.wrap} ${className}`}
+      className={`stat-card relative overflow-hidden rounded-[12px] border p-4 shadow-[0_1px_2px_rgba(10,18,34,0.03)] sm:p-5 ${t.wrap} ${className}`}
     >
       <div className="flex items-center gap-2.5">
         {icon && (
@@ -218,7 +300,7 @@ export function Stat({
         <span
           className={`figure whitespace-nowrap text-[30px] leading-none sm:text-[34px] ${t.value} ${valueClassName}`}
         >
-          {value}
+          <AnimatedValue value={value} />
         </span>
         {unit && (
           <span className={`font-sans text-[13px] font-semibold ${t.unit}`}>
@@ -260,6 +342,11 @@ export function Bar({
   track?: 'light' | 'tint'
 }) {
   const width = max > 0 ? Math.min(100, (value / max) * 100) : 0
+  const [grown, setGrown] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setGrown(true), 60)
+    return () => clearTimeout(t)
+  }, [])
   const color =
     tone === 'forge'
       ? 'bg-forge'
@@ -268,6 +355,7 @@ export function Bar({
         : tone === 'amber'
           ? 'bg-amber'
           : 'bg-iron'
+  const shown = grown || prefersReducedMotion() ? width : 0
   return (
     <div
       className={`overflow-hidden rounded-full ${
@@ -279,7 +367,7 @@ export function Bar({
       <div
         className={`h-full rounded-full ${color}`}
         style={{
-          width: `${width}%`,
+          width: `${shown}%`,
           transition: 'width 700ms cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       />
@@ -451,7 +539,7 @@ export function BenchmarkGauge({
             letterSpacing: '-0.045em',
           }}
         >
-          {value.toFixed(2)}
+          <AnimatedValue value={value.toFixed(2)} />
         </text>
         <text
           x={cx}
@@ -486,12 +574,16 @@ export function BenchmarkGauge({
         <span className="flex items-center gap-1.5 font-semibold text-fg-dim">
           <span className="h-2 w-2 rounded-full bg-[#0f172a]" />
           Your intensity
-          <span className="num font-bold text-fg">{value.toFixed(2)}</span>
+          <span className="num font-bold text-fg">
+            <AnimatedValue value={value.toFixed(2)} />
+          </span>
         </span>
         <span className="flex items-center gap-1.5 font-semibold text-fg-dim">
           <span className="h-2.5 w-[3px] rounded-full bg-[#0284c7]" />
           Median
-          <span className="num font-bold text-fg">{median.toFixed(2)}</span>
+          <span className="num font-bold text-fg">
+            <AnimatedValue value={median.toFixed(2)} />
+          </span>
         </span>
       </div>
     </div>

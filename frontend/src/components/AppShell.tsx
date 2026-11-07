@@ -36,6 +36,45 @@ const SECTOR_LABEL: Record<string, string> = {
   other: 'Manufacturing',
 }
 
+function BrandMark({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect width="32" height="32" rx="3" fill="#111827" />
+      <path
+        d="M8.5 10.5h15M8.5 16h15M8.5 21.5h8.5"
+        stroke="#F7F8FA"
+        strokeWidth="1.7"
+        strokeLinecap="square"
+      />
+      <circle cx="23" cy="21.5" r="2.1" fill="#5EEAD4" />
+    </svg>
+  )
+}
+
+function Brand() {
+  return (
+    <span className="flex min-w-0 items-center gap-3">
+      <BrandMark className="brand-mark h-8 w-8 shrink-0" />
+      <span className="min-w-0">
+        <span
+          className="block truncate text-[21px] font-semibold leading-none tracking-[-0.02em] text-fg"
+          style={{ fontFamily: "'Newsreader', Georgia, serif" }}
+        >
+          Green Ledger
+        </span>
+        <span className="mt-1 block text-[9.5px] font-bold tracking-[0.14em] text-[#64748b]">
+          CARBON INTELLIGENCE
+        </span>
+      </span>
+    </span>
+  )
+}
+
 export function AppShell() {
   const { company, reset, loadDemo } = useSession()
   const location = useLocation()
@@ -79,7 +118,7 @@ export function AppShell() {
 
       <aside
         className={[
-          'fixed inset-y-0 left-0 z-40 flex w-[264px] shrink-0 flex-col border-r border-[#dde4ee] bg-[#f4f6fa]/95 backdrop-blur-xl',
+          'fixed inset-y-0 left-0 z-40 flex w-[264px] shrink-0 flex-col border-r border-[#dde4ee] bg-[#f4f6fa]/95 backdrop-blur-xl sidebar-in',
           'transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen',
           open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}
@@ -87,33 +126,10 @@ export function AppShell() {
         <div className="flex h-16 shrink-0 items-center gap-3 border-b border-[#dde4ee] px-5">
           <button
             onClick={() => navigate('/')}
-            className="flex min-w-0 items-center gap-2.5 text-left"
+            className="brand flex min-w-0 items-center text-left"
             aria-label="Green Ledger overview"
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#16a34a] shadow-[0_2px_6px_rgba(22,163,74,0.28)]">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-[18px] w-[18px] text-white"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-                <path d="M6 6h10" />
-                <path d="M6 10h7" />
-                <path d="M6 14h10" />
-              </svg>
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate font-display text-[17px] font-bold leading-tight tracking-[-0.03em] text-fg">
-                Green Ledger
-              </span>
-              <span className="block text-[9.5px] font-bold tracking-[0.14em] text-[#64748b]">
-                CARBON INTELLIGENCE
-              </span>
-            </span>
+            <Brand />
           </button>
 
           <button
@@ -130,7 +146,7 @@ export function AppShell() {
           className="flex-1 overflow-y-auto px-3 pb-4 pt-5"
         >
           <p className="eyebrow mb-2.5 px-2.5">Workspace</p>
-          <ul className="space-y-1">
+          <ul className="stagger-list space-y-1">
             {NAV.map((item) => {
               const Icon = item.icon
               return (
@@ -140,36 +156,26 @@ export function AppShell() {
                     end={item.end}
                     className={({ isActive }) =>
                       [
-                        'group relative flex h-10 items-center gap-2.5 rounded-[8px] border px-2.5 text-[13px] font-semibold transition-all duration-150',
+                        'nav-item group relative flex h-10 items-center gap-3 rounded-[8px] px-3 text-[13px] font-semibold transition-all duration-150',
                         isActive
-                          ? 'border-[#e1e7f0] bg-white text-fg shadow-[0_1px_2px_rgba(10,18,34,0.05)]'
-                          : 'border-transparent text-[#42526b] hover:border-[#e6ebf3] hover:bg-white/60 hover:text-fg',
+                          ? 'border border-[#d4dce7] bg-white text-[#0f172a] shadow-[0_1px_3px_rgba(15,23,42,0.06),0_1px_2px_rgba(15,23,42,0.04)]'
+                          : 'border border-transparent text-[#556477] hover:bg-white/60 hover:text-[#0f172a]',
                       ].join(' ')
                     }
                   >
                     {({ isActive }) => (
                       <>
-                        {isActive && (
-                          <span className="absolute -left-px top-2 bottom-2 w-[3px] rounded-r-full bg-jade" />
-                        )}
                         <span
                           className={[
-                            'flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] transition-colors',
+                            'flex h-6 w-6 shrink-0 items-center justify-center transition-colors',
                             isActive
-                              ? 'bg-[#eaf7ee] text-jade'
-                              : 'text-[#64748b] group-hover:text-fg',
+                              ? 'text-[#0f172a]'
+                              : 'text-[#64748b] group-hover:text-[#0f172a]',
                           ].join(' ')}
                         >
-                          <Icon size={15.5} strokeWidth={isActive ? 2.4 : 2} />
+                          <Icon size={16} strokeWidth={isActive ? 2.2 : 2} />
                         </span>
                         <span className="flex-1 truncate">{item.label}</span>
-                        {isActive && (
-                          <ChevronRight
-                            size={13}
-                            className="shrink-0 text-[#64748b]"
-                            aria-hidden="true"
-                          />
-                        )}
                       </>
                     )}
                   </NavLink>

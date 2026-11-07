@@ -56,12 +56,12 @@ export function FileDropzone({
         if (f && !busy) onSelect(f)
       }}
       className={[
-        'group cursor-pointer rounded-[10px] border bg-panel p-3.5 text-left transition-all duration-150',
+        'group cursor-pointer rounded-[10px] border bg-panel p-3.5 text-left transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
         dragging
-          ? 'border-forge bg-forge-light ring-2 ring-forge/15'
+          ? 'scale-[1.01] border-forge bg-forge-light shadow-[0_16px_32px_-22px_rgba(37,99,235,0.55)] ring-2 ring-forge/15'
           : done
-            ? 'border-[#cfe8d9] hover:border-[#a9d9bb]'
-            : 'border-line hover:border-line-strong hover:bg-[#fbfcfe]',
+            ? 'border-[#cfe8d9] hover:-translate-y-0.5 hover:border-[#a9d9bb] hover:shadow-[0_12px_26px_-22px_rgba(10,18,34,0.45)]'
+            : 'border-line hover:-translate-y-0.5 hover:border-line-strong hover:bg-[#fbfcfe] hover:shadow-[0_12px_26px_-22px_rgba(10,18,34,0.45)]',
         busy ? 'pointer-events-none opacity-70' : '',
       ].join(' ')}
     >
@@ -79,7 +79,7 @@ export function FileDropzone({
 
       <div className="flex items-start gap-3">
         <div
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border transition-colors ${
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border transition-all duration-200 group-hover:scale-[1.04] ${
             done
               ? 'border-[#cfe8d9] bg-[#f1fbf4] text-jade'
               : dragging

@@ -251,7 +251,7 @@ export function BaselinePage() {
               </span>
               <span />
             </div>
-            <ul>
+            <ul className="stagger-list">
               {activeBaseline.evidenceTrail.map(
                 (e: EvidenceEntry, i: number) => (
                   <li key={i} className="border-b border-[#eff2f7] last:border-b-0">
@@ -287,7 +287,7 @@ export function BaselinePage() {
                       </div>
                     </button>
                     {open === i && (
-                      <div className="grid gap-4 border-t border-line bg-[#fbfcfe] px-5 py-4 pl-[4.6rem] sm:grid-cols-2">
+                      <div className="detail-in grid gap-4 border-t border-line bg-[#fbfcfe] px-5 py-4 pl-[4.6rem] sm:grid-cols-2">
                         <div>
                           <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#5b6b82]">
                             Calculation
